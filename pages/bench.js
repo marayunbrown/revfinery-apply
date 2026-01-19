@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { ArrowLeft, ArrowRight, Check, CheckCircle, Star } from 'lucide-react';
 
 const HUBSPOT_PORTAL_ID = '244430724';
@@ -25,10 +26,11 @@ const ENGAGEMENT_TYPES = [
 
 const HEARD_FROM = [
   'LinkedIn', 'Referral from a friend', 'Google search',
-  'Revfinery website', 'Social media', 'Other'
+  'Revfinery website', 'Social media', 'Skills Assessment', 'Other'
 ];
 
 export default function BenchApplication() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -40,6 +42,23 @@ export default function BenchApplication() {
     takenAssessment: '', assessmentScore: '', portfolioLink: '', heardFrom: '', anythingElse: ''
   });
   const totalSteps = 5;
+
+  // Read URL parameters on mount (score, email, firstName, lastName from assessment)
+  useEffect(() => {
+    if (router.isReady) {
+      const { score, email, firstName, lastName } = router.query;
+      
+      setFormData(prev => ({
+        ...prev,
+        firstName: firstName ? decodeURIComponent(firstName) : prev.firstName,
+        lastName: lastName ? decodeURIComponent(lastName) : prev.lastName,
+        email: email ? decodeURIComponent(email) : prev.email,
+        assessmentScore: score ? `${score}%` : prev.assessmentScore,
+        takenAssessment: score ? 'Yes' : prev.takenAssessment,
+        heardFrom: score ? 'Skills Assessment' : prev.heardFrom
+      }));
+    }
+  }, [router.isReady, router.query]);
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
 
@@ -96,6 +115,10 @@ export default function BenchApplication() {
     finally { setIsSubmitting(false); }
   };
 
+  // Check if user came from assessment
+  const cameFromAssessment = router.query.score;
+  const assessmentScore = parseInt(router.query.score) || 0;
+
   if (isSubmitted) {
     return (
       <>
@@ -139,6 +162,25 @@ export default function BenchApplication() {
           <a href="https://www.revfinery.com/talent-network"><ArrowLeft size={16} />Back to Revfinery</a>
           <h1>Apply to the <span className="gradient-text">Revfinery Bench</span></h1>
           <p>Consult on real client engagements alongside Revfinery.</p>
+          
+          {/* Show qualified badge if came from assessment with 75%+ */}
+          {cameFromAssessment && assessmentScore >= 75 && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '12px',
+              padding: '8px 16px',
+              background: 'linear-gradient(135deg, #ffd166, #f25025)',
+              borderRadius: '999px',
+              fontSize: '14px',
+              fontWeight: '800',
+              color: '#fff'
+            }}>
+              <Star size={16} fill="#fff" />
+              Bench Qualified: {router.query.score}%
+            </div>
+          )}
         </header>
         <div className="progress-container">
           <div className="progress-steps">
@@ -150,7 +192,7 @@ export default function BenchApplication() {
           {step === 1 && (
             <>
               <h2>Let's start with the basics</h2>
-              <p className="subtitle">Tell us a bit about yourself.</p>
+              <p className="subtitle">{cameFromAssessment ? "We've pre-filled some info from your assessment. Verify and continue." : "Tell us a bit about yourself."}</p>
               <div className="field-row">
                 <div className="field-group">
                   <label>First Name <span className="required">*</span></label>
@@ -327,36 +369,70 @@ export default function BenchApplication() {
             <>
               <h2>Almost done!</h2>
               <p className="subtitle">A few more questions to wrap up your application.</p>
-              <div className="field-group">
-                <label>Have you taken the Revfinery Skills Assessment?</label>
-                <div className="checkbox-grid" style={{ gridTemplateColumns: '1fr' }}>
-                  {['Yes', 'No', 'Not yet, but I plan to'].map(option => (
-                    <label key={option} className={`checkbox-item ${formData.takenAssessment === option ? 'selected' : ''}`}>
-                      <input type="radio" name="takenAssessment" checked={formData.takenAssessment === option} onChange={() => updateField('takenAssessment', option)} />
-                      <span className="checkbox-box"><Check /></span>
-                      <span className="checkbox-label">{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              {formData.takenAssessment === 'Yes' && (
+              
+              {/* Show pre-filled score if came from assessment */}
+              {cameFromAssessment ? (
                 <div className="field-group">
-                  <label>What was your score?</label>
-                  <input type="text" value={formData.assessmentScore} onChange={e => updateField('assessmentScore', e.target.value)} placeholder="e.g., 82%" />
-                  <p className="helper-text">Bench candidates typically score 75% or higher</p>
+                  <label>Your Assessment Score</label>
+                  <div style={{
+                    padding: '16px',
+                    background: assessmentScore >= 75 ? 'linear-gradient(135deg, #fff7e8, #ffe4c4)' : '#eaf6f7',
+                    borderRadius: '12px',
+                    border: assessmentScore >= 75 ? '2px solid #f25025' : '2px solid #0c6b73',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    <Star size={24} color={assessmentScore >= 75 ? '#f25025' : '#0c6b73'} fill={assessmentScore >= 75 ? '#f25025' : 'none'} />
+                    <div>
+                      <div style={{ fontWeight: '800', fontSize: '24px', color: assessmentScore >= 75 ? '#f25025' : '#0c6b73' }}>
+                        {formData.assessmentScore}
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#4c5f62' }}>
+                        {assessmentScore >= 75 ? '🔥 Bench Qualified — Top 25%' : 'Verified from Skills Assessment'}
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  <div className="field-group">
+                    <label>Have you taken the Revfinery Skills Assessment?</label>
+                    <div className="checkbox-grid" style={{ gridTemplateColumns: '1fr' }}>
+                      {['Yes', 'No', 'Not yet, but I plan to'].map(option => (
+                        <label key={option} className={`checkbox-item ${formData.takenAssessment === option ? 'selected' : ''}`}>
+                          <input type="radio" name="takenAssessment" checked={formData.takenAssessment === option} onChange={() => updateField('takenAssessment', option)} />
+                          <span className="checkbox-box"><Check /></span>
+                          <span className="checkbox-label">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  {formData.takenAssessment === 'Yes' && (
+                    <div className="field-group">
+                      <label>What was your score?</label>
+                      <input type="text" value={formData.assessmentScore} onChange={e => updateField('assessmentScore', e.target.value)} placeholder="e.g., 82%" />
+                      <p className="helper-text">Bench candidates typically score 75% or higher</p>
+                    </div>
+                  )}
+                </>
               )}
+              
               <div className="field-group">
                 <label>Portfolio or Case Studies (optional)</label>
                 <input type="url" value={formData.portfolioLink} onChange={e => updateField('portfolioLink', e.target.value)} placeholder="Link to portfolio, deck, or relevant work" />
               </div>
-              <div className="field-group">
-                <label>How did you hear about Revfinery?</label>
-                <select value={formData.heardFrom} onChange={e => updateField('heardFrom', e.target.value)}>
-                  <option value="">Select...</option>
-                  {HEARD_FROM.map(source => (<option key={source} value={source}>{source}</option>))}
-                </select>
-              </div>
+              
+              {!cameFromAssessment && (
+                <div className="field-group">
+                  <label>How did you hear about Revfinery?</label>
+                  <select value={formData.heardFrom} onChange={e => updateField('heardFrom', e.target.value)}>
+                    <option value="">Select...</option>
+                    {HEARD_FROM.map(source => (<option key={source} value={source}>{source}</option>))}
+                  </select>
+                </div>
+              )}
+              
               <div className="field-group">
                 <label>Anything else you'd like us to know?</label>
                 <textarea value={formData.anythingElse} onChange={e => updateField('anythingElse', e.target.value)} placeholder="Tell us about specific expertise, notable wins, or what excites you about Revfinery..." />
