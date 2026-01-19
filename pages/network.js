@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { ArrowLeft, ArrowRight, Check, CheckCircle } from 'lucide-react';
 
+// Configuration
 const HUBSPOT_PORTAL_ID = '244430724';
 const HUBSPOT_FORM_ID = '4d4e2afd-64de-4ed9-bd9b-57b616a8d4d0';
+
+// Form Options
 const INDUSTRIES = [
   'SaaS / Software',
   'FinTech / Financial Services',
@@ -38,10 +42,12 @@ const HEARD_FROM = [
   'Google search',
   'Revfinery website',
   'Social media',
+  'Skills Assessment',
   'Other'
 ];
 
 export default function NetworkApplication() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -66,6 +72,24 @@ export default function NetworkApplication() {
 
   const totalSteps = 4;
 
+  // Read URL parameters on mount (score, email, firstName, lastName from assessment)
+  useEffect(() => {
+    if (router.isReady) {
+      const { score, email, firstName, lastName } = router.query;
+      
+      setFormData(prev => ({
+        ...prev,
+        firstName: firstName ? decodeURIComponent(firstName) : prev.firstName,
+        lastName: lastName ? decodeURIComponent(lastName) : prev.lastName,
+        email: email ? decodeURIComponent(email) : prev.email,
+        assessmentScore: score ? `${score}%` : prev.assessmentScore,
+        takenAssessment: score ? 'Yes' : prev.takenAssessment,
+        heardFrom: score ? 'Skills Assessment' : prev.heardFrom
+      }));
+    }
+  }, [router.isReady, router.query]);
+
+  // Scroll to top on step change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
@@ -86,9 +110,12 @@ export default function NetworkApplication() {
   const canProceed = () => {
     switch(step) {
       case 1:
-        return formData.firstName && formData.lastName && formData.email;
+        return formData.firstName.trim() && 
+               formData.lastName.trim() && 
+               formData.email.trim() && 
+               formData.email.includes('@');
       case 2:
-        return formData.yearsExperience && formData.currentRole;
+        return formData.yearsExperience && formData.currentRole.trim();
       case 3:
         return formData.workInterests.length > 0 && formData.lookingFor.length > 0;
       case 4:
@@ -101,7 +128,6 @@ export default function NetworkApplication() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
-    // Prepare data for HubSpot
     const hubspotData = {
       fields: [
         { name: 'firstname', value: formData.firstName },
@@ -121,7 +147,7 @@ export default function NetworkApplication() {
         { name: 'message', value: formData.anythingElse }
       ],
       context: {
-        pageUri: window.location.href,
+        pageUri: typeof window !== 'undefined' ? window.location.href : '',
         pageName: 'Talent Network Application'
       }
     };
@@ -136,31 +162,32 @@ export default function NetworkApplication() {
         }
       );
       
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        // Still show success for now, log error
-        console.log('HubSpot submission error');
-        setIsSubmitted(true);
+      setIsSubmitted(true);
+      
+      if (!response.ok) {
+        console.log('HubSpot submission returned non-200 status');
       }
     } catch (error) {
-      console.log('Network error:', error);
+      console.log('Network error during submission:', error);
       setIsSubmitted(true);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Success Screen
   if (isSubmitted) {
     return (
       <>
         <Head>
           <title>Application Received | Revfinery Talent Network</title>
+          <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
         </Head>
+        
         <div className="form-container">
           <header className="form-header">
             <a href="https://www.revfinery.com/talent-network">
-              <ArrowLeft size={16} />
+              <ArrowLeft size={14} />
               Back to Revfinery
             </a>
           </header>
@@ -186,17 +213,18 @@ export default function NetworkApplication() {
                 <a 
                   href="https://revfinery-assessment.vercel.app" 
                   className="btn btn-teal"
-                  style={{ marginBottom: '12px' }}
+                  style={{ marginBottom: '16px', width: '100%', maxWidth: '320px' }}
                 >
                   Take the Skills Assessment
                   <ArrowRight size={16} />
                 </a>
               )}
               
-              <br />
-              <a href="https://www.revfinery.com" className="btn btn-secondary">
-                Return to Revfinery
-              </a>
+              <div>
+                <a href="https://www.revfinery.com" className="btn btn-secondary">
+                  Return to Revfinery
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -204,30 +232,54 @@ export default function NetworkApplication() {
     );
   }
 
+  // Check if user came from assessment (has score in URL)
+  const cameFromAssessment = router.query.score;
+
+  // Form Steps
   return (
     <>
       <Head>
         <title>Apply to the Talent Network | Revfinery</title>
-        <meta name="description" content="Apply to join the Revfinery Talent Network" />
+        <meta name="description" content="Apply to join the Revfinery Talent Network - Build skills, get matched, grow your career." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
       </Head>
 
       <div className="form-container">
         <header className="form-header">
           <a href="https://www.revfinery.com/talent-network">
-            <ArrowLeft size={16} />
+            <ArrowLeft size={14} />
             Back to Revfinery
           </a>
           <h1>Apply to the <span className="gradient-text">Talent Network</span></h1>
           <p>Build skills, get matched, grow your career.</p>
+          
+          {/* Show score badge if came from assessment */}
+          {cameFromAssessment && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '12px',
+              padding: '8px 16px',
+              background: 'rgba(255,255,255,0.15)',
+              borderRadius: '999px',
+              fontSize: '14px',
+              fontWeight: '700'
+            }}>
+              <CheckCircle size={16} />
+              Assessment Score: {router.query.score}%
+            </div>
+          )}
         </header>
 
+        {/* Progress Bar */}
         <div className="progress-container">
           <div className="progress-steps">
-            {[1,2,3,4].map(s => (
+            {[1, 2, 3, 4].map(s => (
               <div 
                 key={s} 
-                className={`progress-step ${s === step ? 'active' : ''} ${s < step ? 'completed' : ''}`}
+                className={`progress-step ${s === step ? 'active' : ''} ${s < step ? 'completed' : ''}`} 
               />
             ))}
           </div>
@@ -237,9 +289,14 @@ export default function NetworkApplication() {
         <div className="form-card">
           {/* Step 1: Basic Info */}
           {step === 1 && (
-            <>
+            <div className="step-content" key="step1">
               <h2>Let's start with the basics</h2>
-              <p className="subtitle">Tell us a bit about yourself.</p>
+              <p className="subtitle">
+                {cameFromAssessment 
+                  ? "We've pre-filled some info from your assessment. Verify and continue."
+                  : "Tell us a bit about yourself."
+                }
+              </p>
               
               <div className="field-row">
                 <div className="field-group">
@@ -249,6 +306,7 @@ export default function NetworkApplication() {
                     value={formData.firstName}
                     onChange={e => updateField('firstName', e.target.value)}
                     placeholder="First name"
+                    autoFocus
                   />
                 </div>
                 <div className="field-group">
@@ -291,14 +349,14 @@ export default function NetworkApplication() {
                   placeholder="City, State"
                 />
               </div>
-            </>
+            </div>
           )}
 
           {/* Step 2: Experience */}
           {step === 2 && (
-            <>
+            <div className="step-content" key="step2">
               <h2>Your experience</h2>
-              <p className="subtitle">Help us understand your background.</p>
+              <p className="subtitle">Help us understand where you're at in your career.</p>
               
               <div className="field-group">
                 <label>Years in Sales <span className="required">*</span></label>
@@ -339,7 +397,7 @@ export default function NetworkApplication() {
                         onChange={() => toggleArrayField('industries', industry)}
                       />
                       <span className="checkbox-box">
-                        <Check />
+                        <Check size={14} />
                       </span>
                       <span className="checkbox-label">{industry}</span>
                     </label>
@@ -361,12 +419,12 @@ export default function NetworkApplication() {
                   <option value="Not applicable">Not applicable</option>
                 </select>
               </div>
-            </>
+            </div>
           )}
 
           {/* Step 3: Interests */}
           {step === 3 && (
-            <>
+            <div className="step-content" key="step3">
               <h2>What interests you?</h2>
               <p className="subtitle">Help us match you to the right opportunities.</p>
               
@@ -385,7 +443,7 @@ export default function NetworkApplication() {
                         onChange={() => toggleArrayField('workInterests', interest)}
                       />
                       <span className="checkbox-box">
-                        <Check />
+                        <Check size={14} />
                       </span>
                       <span className="checkbox-label">{interest}</span>
                     </label>
@@ -408,69 +466,102 @@ export default function NetworkApplication() {
                         onChange={() => toggleArrayField('lookingFor', item)}
                       />
                       <span className="checkbox-box">
-                        <Check />
+                        <Check size={14} />
                       </span>
                       <span className="checkbox-label">{item}</span>
                     </label>
                   ))}
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* Step 4: Wrap-up */}
           {step === 4 && (
-            <>
+            <div className="step-content" key="step4">
               <h2>Almost done!</h2>
               <p className="subtitle">A few more questions to wrap up.</p>
               
-              <div className="field-group">
-                <label>Have you taken the Revfinery Skills Assessment?</label>
-                <div className="radio-grid">
-                  {['Yes', 'No', 'Not yet, but I plan to'].map(option => (
-                    <label 
-                      key={option}
-                      className={`checkbox-item ${formData.takenAssessment === option ? 'selected' : ''}`}
-                    >
+              {/* Only show assessment question if they didn't come from assessment */}
+              {!cameFromAssessment && (
+                <>
+                  <div className="field-group">
+                    <label>Have you taken the Revfinery Skills Assessment?</label>
+                    <div className="radio-grid">
+                      {['Yes', 'No', 'Not yet, but I plan to'].map(option => (
+                        <label 
+                          key={option}
+                          className={`checkbox-item ${formData.takenAssessment === option ? 'selected' : ''}`}
+                        >
+                          <input
+                            type="radio"
+                            name="takenAssessment"
+                            checked={formData.takenAssessment === option}
+                            onChange={() => updateField('takenAssessment', option)}
+                          />
+                          <span className="checkbox-box">
+                            <Check size={14} />
+                          </span>
+                          <span className="checkbox-label">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {formData.takenAssessment === 'Yes' && (
+                    <div className="field-group">
+                      <label>What was your score?</label>
                       <input
-                        type="radio"
-                        name="takenAssessment"
-                        checked={formData.takenAssessment === option}
-                        onChange={() => updateField('takenAssessment', option)}
+                        type="text"
+                        value={formData.assessmentScore}
+                        onChange={e => updateField('assessmentScore', e.target.value)}
+                        placeholder="e.g., 72%"
                       />
-                      <span className="checkbox-box">
-                        <Check />
-                      </span>
-                      <span className="checkbox-label">{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                    </div>
+                  )}
+                </>
+              )}
               
-              {formData.takenAssessment === 'Yes' && (
+              {/* Show pre-filled score if came from assessment */}
+              {cameFromAssessment && (
                 <div className="field-group">
-                  <label>What was your score?</label>
-                  <input
-                    type="text"
-                    value={formData.assessmentScore}
-                    onChange={e => updateField('assessmentScore', e.target.value)}
-                    placeholder="e.g., 72%"
-                  />
+                  <label>Your Assessment Score</label>
+                  <div style={{
+                    padding: '16px',
+                    background: '#eaf6f7',
+                    borderRadius: '12px',
+                    border: '2px solid #0c6b73',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    <CheckCircle size={24} color="#0c6b73" />
+                    <div>
+                      <div style={{ fontWeight: '800', fontSize: '24px', color: '#0c6b73' }}>
+                        {formData.assessmentScore}
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#4c5f62' }}>
+                        Verified from Skills Assessment
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
               
-              <div className="field-group">
-                <label>How did you hear about Revfinery?</label>
-                <select
-                  value={formData.heardFrom}
-                  onChange={e => updateField('heardFrom', e.target.value)}
-                >
-                  <option value="">Select...</option>
-                  {HEARD_FROM.map(source => (
-                    <option key={source} value={source}>{source}</option>
-                  ))}
-                </select>
-              </div>
+              {!cameFromAssessment && (
+                <div className="field-group">
+                  <label>How did you hear about Revfinery?</label>
+                  <select
+                    value={formData.heardFrom}
+                    onChange={e => updateField('heardFrom', e.target.value)}
+                  >
+                    <option value="">Select...</option>
+                    {HEARD_FROM.map(source => (
+                      <option key={source} value={source}>{source}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               
               <div className="field-group">
                 <label>Anything else you'd like us to know?</label>
@@ -480,7 +571,7 @@ export default function NetworkApplication() {
                   placeholder="Tell us about your goals, availability, or anything else..."
                 />
               </div>
-            </>
+            </div>
           )}
 
           {/* Navigation */}
@@ -515,8 +606,17 @@ export default function NetworkApplication() {
                 onClick={handleSubmit}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                {!isSubmitting && <ArrowRight size={16} />}
+                {isSubmitting ? (
+                  <>
+                    <span className="loading-spinner" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    Submit Application
+                    <ArrowRight size={16} />
+                  </>
+                )}
               </button>
             )}
           </div>
