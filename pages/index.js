@@ -73,14 +73,14 @@ export default function Home() {
           <div className="landing-card bench">
             <span className="badge">
               <Star size={14} />
-              Sales Leaders
+              Senior Sellers & Leaders
             </span>
             <h2>The Bench</h2>
-            <p>For sales leaders ready for fractional leadership or GTM advisory work with Revfinery clients.</p>
+            <p>For experienced sellers and sales leaders ready for senior client work, fractional leadership, or GTM advisory.</p>
             <ul>
               <li>Fractional sales leadership roles</li>
               <li>GTM advisory engagements</li>
-              <li>Strategic deal coaching</li>
+              <li>Senior selling on client teams</li>
               <li>Set your own rate and availability</li>
             </ul>
             <div className="card-footer">
@@ -88,7 +88,7 @@ export default function Home() {
                 Apply to the Bench
                 <ArrowRight size={16} />
               </Link>
-              <p className="card-note">Best for: 5+ years in sales, leadership experience</p>
+              <p className="card-note">Best for: 10+ years in sales or sales leadership</p>
             </div>
           </div>
         </div>
