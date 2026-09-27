@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <Head>
         <title>Apply | Revfinery Talent Network</title>
-        <meta name="description" content="Join the Revfinery ecosystem - Apply to the University Cohort, Talent Network, or the Revfinery Bench" />
+        <meta name="description" content="Join the Revfinery Talent Network. Apply to the University Cohort, The Field, or The Bench." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
       </Head>
@@ -32,10 +32,10 @@ export default function Home() {
             <h2>University Cohort</h2>
             <p>8-week virtual program for students and early-career professionals breaking into B2B sales.</p>
             <ul>
-              <li>Self-paced AI Trainer curriculum</li>
+              <li>8-week guided curriculum</li>
               <li>Live kickoff + graduation sessions</li>
               <li>Private Slack community</li>
-              <li>Certificate + job matching at 60%+</li>
+              <li>Graduate ready to interview</li>
             </ul>
             <div className="card-footer">
               <Link href="/cohort">
@@ -46,14 +46,14 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Talent Network Card */}
+          {/* The Field Card */}
           <div className="landing-card network">
             <span className="badge">
               <Users size={14} />
               Build & Grow
             </span>
-            <h2>Talent Network</h2>
-            <p>For sales professionals looking to build skills, get trained, and get matched to opportunities.</p>
+            <h2>The Field</h2>
+            <p>For working sellers who want to get matched to BDR and AE roles with the companies we work with.</p>
             <ul>
               <li>Access training, playbooks, and live practice</li>
               <li>Get matched to BDR/SDR roles and projects</li>
@@ -62,10 +62,10 @@ export default function Home() {
             </ul>
             <div className="card-footer">
               <Link href="/network">
-                Apply to the Network
+                Apply to the Field
                 <ArrowRight size={16} />
               </Link>
-              <p className="card-note">Best for: 1-5 years in sales, skill-building focus</p>
+              <p className="card-note">Best for: 1-5 years in sales</p>
             </div>
           </div>
 
@@ -73,14 +73,14 @@ export default function Home() {
           <div className="landing-card bench">
             <span className="badge">
               <Star size={14} />
-              Top Performers
+              Sales Leaders
             </span>
-            <h2>The Revfinery Bench</h2>
-            <p>For experienced sellers and consultants ready to work on real client engagements.</p>
+            <h2>The Bench</h2>
+            <p>For sales leaders ready for fractional leadership or GTM advisory work with Revfinery clients.</p>
             <ul>
-              <li>Consult on Revfinery client projects</li>
-              <li>Fractional leadership opportunities</li>
-              <li>Strategic deal coaching and advisory</li>
+              <li>Fractional sales leadership roles</li>
+              <li>GTM advisory engagements</li>
+              <li>Strategic deal coaching</li>
               <li>Set your own rate and availability</li>
             </ul>
             <div className="card-footer">
@@ -94,7 +94,7 @@ export default function Home() {
         </div>
 
         <div className="landing-footer">
-          <p>Not sure which path? <a href="https://revfinery-assessment.vercel.app">Take the free skills assessment</a> to see where you stand.</p>
+          <p>Not sure which path? <a href="https://www.revfinery.com/contact">Contact us</a> and we'll point you in the right direction.</p>
         </div>
       </div>
 
@@ -286,4 +286,3 @@ export default function Home() {
     </>
   );
 }
-
