@@ -154,7 +154,7 @@ export default function TalentNetwork() {
     return (
       <>
         <Head>
-          <title>Application Submitted | Revfinery Talent Network</title>
+          <title>Application Submitted | The Field | Revfinery</title>
         </Head>
         <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #fbf6f1 0%, #fff7e8 50%, #eaf6f7 100%)', padding: '24px'}}>
           <div style={{maxWidth: '480px', width: '100%', textAlign: 'center', padding: '48px 32px', backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)'}}>
@@ -163,7 +163,7 @@ export default function TalentNetwork() {
             </div>
             <h1 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#0e2a2d'}}>Application Received!</h1>
             <p style={{fontSize: '16px', color: '#4c5f62', marginBottom: '32px'}}>
-              Thanks for applying to the Talent Network. We'll review your application and be in touch soon.
+              Thanks for applying to the Field. We'll review your application and be in touch soon.
             </p>
             <a href="https://www.revfinery.com" style={{display: 'inline-block', padding: '14px 28px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600'}}>
               Back to Revfinery
@@ -177,7 +177,7 @@ export default function TalentNetwork() {
   return (
     <>
       <Head>
-        <title>Apply to the Talent Network | Revfinery</title>
+        <title>Apply to the Field | Revfinery</title>
       </Head>
       <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #fbf6f1 0%, #fff7e8 50%, #eaf6f7 100%)'}}>
         {/* Header */}
@@ -193,10 +193,10 @@ export default function TalentNetwork() {
           {/* Title Section */}
           <div style={{textAlign: 'center', marginBottom: '32px'}}>
             <span style={{display: 'inline-block', padding: '8px 16px', marginBottom: '12px', fontWeight: 'bold', fontSize: '13px', backgroundColor: '#f25025', color: 'white', borderRadius: '20px'}}>
-              TALENT NETWORK
+              THE FIELD
             </span>
-            <h1 style={{fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#0e2a2d'}}>Join the Network</h1>
-            <p style={{color: '#4c5f62'}}>Get matched to opportunities that fit your skills</p>
+            <h1 style={{fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#0e2a2d'}}>Join the Field</h1>
+            <p style={{color: '#4c5f62'}}>Get matched to BDR and AE roles that fit your experience</p>
             
             {/* Show badge if from assessment */}
             {fromAssessment && assessmentScore && (
@@ -369,7 +369,7 @@ export default function TalentNetwork() {
                 </div>
 
                 <div>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>What are you looking for from the network?</label>
+                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>What are you looking for from Revfinery?</label>
                   <textarea
                     value={formData.lookingFor}
                     onChange={(e) => updateField('lookingFor', e.target.value)}
