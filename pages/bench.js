@@ -237,7 +237,7 @@ export default function RevfineryBench() {
               THE BENCH
             </span>
             <h1 style={{fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#0e2a2d'}}>Apply to the Bench</h1>
-            <p style={{color: '#4c5f62'}}>Join our network of top sales consultants</p>
+            <p style={{color: '#4c5f62'}}>For sales leaders ready for fractional leadership or GTM advisory work</p>
             
             {/* Show badge if from assessment with high score */}
             {fromAssessment && assessmentScore && parseInt(assessmentScore) >= 75 && (
