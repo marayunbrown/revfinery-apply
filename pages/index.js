@@ -65,7 +65,7 @@ export default function Home() {
                 Apply to the Field
                 <ArrowRight size={16} />
               </Link>
-              <p className="card-note">Best for: 1-5 years in sales</p>
+              <p className="card-note">Best for: 1-10 years in sales</p>
             </div>
           </div>
 
