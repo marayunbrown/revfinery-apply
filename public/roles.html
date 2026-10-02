@@ -38,6 +38,8 @@ select:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{
 .role h2{font-weight:900;font-size:21px;line-height:1.2;letter-spacing:-.01em;margin:0}
 .client{margin:4px 0 0;color:var(--muted);font-size:15px}
 .status{font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px;white-space:nowrap;background:var(--chip);color:var(--teal)}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.remote{font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px;white-space:nowrap;background:var(--ink);color:#fff}
 .status.soon{background:var(--soon);color:var(--soon-t)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .status:not(.soon){color:#9fe0e6}}
 :root[data-theme="dark"] .status:not(.soon){color:#9fe0e6}
@@ -57,7 +59,7 @@ details ul{margin:12px 0 4px;padding-left:18px;font-size:15px}
 details li{margin-bottom:8px}
 .btn{display:inline-block;margin-top:14px;background:var(--orange);color:#fff;text-decoration:none;font-weight:800;border-radius:999px;padding:12px 22px;font-size:15px}
 .note{font-size:14px;color:var(--muted);margin-top:22px;text-align:center}
-@media(min-width:640px){.facts{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:repeat(4,1fr)}main{padding:30px 20px 70px}.role{padding:26px 26px}}
+@media(min-width:640px){.facts{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(5,1fr)}main{padding:30px 20px 70px}.role{padding:26px 26px}}
 </style>
 </head>
 <body>
@@ -65,7 +67,7 @@ details li{margin-bottom:8px}
  <div class="wrap">
   <div class="brand"><img src="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/6a9e233a3812883238b8de14_Revfinery%20Updated%20Logo%20Tan.avif" alt="Revfinery" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'"><span class="wordmark">Revfinery</span><span class="tn">Talent Network</span></div>
   <h1>Open roles</h1>
-  <p>Paid sales work with the companies we work with. Tap a role to read the full description, then tell us you're interested.</p>
+  <p>Paid sales work with the companies we work with, and every role is remote. Tap a role to read the full description, then tell us you're interested.</p>
  </div>
 </header>
 
@@ -73,6 +75,7 @@ details li{margin-bottom:8px}
  <div class="wrap">
   <div class="filters">
    <div><label for="f-type">Role</label><select id="f-type"><option value="all">All roles</option><option value="bdr">BDR</option><option value="ae">Account Executive</option><option value="lead">Team Lead</option></select></div>
+   <div><label for="f-level">Experience level</label><select id="f-level"><option value="all">Any level</option><option value="cohort">Cohort, less than 1 year</option><option value="field">Field, 1 to 10 years</option><option value="bench">Bench, 10+ years</option></select></div>
    <div><label for="f-commit">Schedule</label><select id="f-commit"><option value="all">Any schedule</option><option value="part">Part-time</option><option value="full">Full-time</option></select></div>
    <div><label for="f-hours">My hours a week</label><select id="f-hours"><option value="99">Any</option><option value="8">Up to 8</option><option value="20">Up to 20</option><option value="30">Up to 30</option><option value="40">40, full-time</option></select></div>
    <div><label for="f-status">Status</label><select id="f-status"><option value="all">Any status</option><option value="open">Open now</option><option value="soon">Opening soon</option></select></div>
@@ -80,10 +83,10 @@ details li{margin-bottom:8px}
   <p class="count" aria-live="polite"><span id="count"></span><button type="button" id="reset" hidden>Clear filters</button></p>
   <div class="empty" id="empty" hidden>No roles match those filters yet. Try widening your hours or clearing the filters.</div>
 
-  <article class="role" data-type="bdr" data-commit="full" data-min="40" data-s="open" style="--bar:#0c6b73">
-   <div class="top"><div><h2>Business Development Representative, full-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="status">Open</span></div>
+  <article class="role" data-level="cohort field" data-type="bdr" data-commit="full" data-min="40" data-s="open" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Business Development Representative, full-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Book qualified meetings with school district leaders for a growing EdTech company.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Hours required</dt><dd>About 40 a week</dd></div><div><dt>When you're needed</dt><dd>Weekdays during school business hours, roughly 8 to 4 in the districts you call</dd></div><div><dt>Pay</dt><dd>Base salary of about $50,000</dd></div><div><dt>Level</dt><dd>Field, or graduating seniors</dd></div></dl>
+   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Experience required</dt><dd>Less than 1 year to 3 years. No prior sales job needed.</dd></div><div><dt>Hours required</dt><dd>About 40 a week</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$50,000 base plus incentives, with on-target earnings around $65,000</dd></div><div><dt>Level</dt><dd>Cohort or Field</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
     <li><b>The company:</b> an education technology company whose software is used by public school districts. You'd be employed directly by the company.</li>
     <li><b>What you'll do:</b> call district and school leaders, work past gatekeepers and book qualified meetings for the company's account executives. You'll log every call and follow up on open conversations.</li>
@@ -91,28 +94,29 @@ details li{margin-bottom:8px}
     <li><b>What you'll learn:</b> phone prospecting, how to qualify a buyer and how public sector organizations buy.</li>
     <li><b>Who it suits:</b> graduating seniors and early-career sellers who are comfortable on the phone and want a full-time start in tech sales.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/" target="_blank" rel="noopener">I'm interested</a>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20full-time%2C%20EdTech%20company">I'm interested</a>
   </article>
 
-  <article class="role" data-type="bdr" data-commit="part" data-min="10" data-s="open" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="status">Open</span></div>
-   <p class="sum">Part-time calling work that fits around classes, with a bonus for every qualified meeting.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Hours required</dt><dd>About 10 to 20 a week</dd></div><div><dt>When you're needed</dt><dd>Calling blocks on weekdays between 8 and 4, when school offices are open</dd></div><div><dt>Pay</dt><dd>Hourly, plus $50 for each qualified meeting</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+  <article class="role" data-level="cohort" data-type="bdr" data-commit="part" data-min="25" data-s="open" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">A set weekday schedule of calling work at $25 an hour, with a bonus for every meeting attended.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. No experience needed.</dd></div><div><dt>Hours required</dt><dd>25 a week</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, 9 a.m. to 2 p.m.</dd></div><div><dt>Pay</dt><dd>$25 an hour, plus a bonus for each meeting attended</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
     <li><b>The company:</b> an education technology company whose software is used by public school districts.</li>
     <li><b>What you'll do:</b> call district and school leaders, work past gatekeepers and book qualified meetings for the company's account executives.</li>
-    <li><b>Schedule:</b> you choose your calling blocks around your classes, within school business hours.</li>
+    <li><b>Schedule:</b> a fixed block from 9 a.m. to 2 p.m., Monday to Friday, for 25 hours a week.</li>
+    <li><b>How you're measured:</b> on specific weekly KPIs, which we walk you through before you start.</li>
     <li><b>Support:</b> Revfinery reviews your recorded calls every week and coaches you on what to change.</li>
     <li><b>What you'll learn:</b> how to open a cold call, handle a gatekeeper and qualify a buyer, with real conversations to show future employers.</li>
-    <li><b>Who it suits:</b> current students who want paid sales experience before they graduate.</li>
+    <li><b>Who it suits:</b> current students with weekday mornings free who want paid sales experience before they graduate.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/cohort" target="_blank" rel="noopener">I'm interested</a>
+   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20EdTech%20company">I'm interested</a>
   </article>
 
-  <article class="role" data-type="bdr" data-commit="part" data-min="5" data-s="soon" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">Cybersecurity and AI consulting firm expanding into the US</p></div><span class="status soon">Opening soon</span></div>
+  <article class="role" data-level="cohort" data-type="bdr" data-commit="part" data-min="5" data-s="soon" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">Cybersecurity and AI consulting firm expanding into the US</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
    <p class="sum">Help a technical consulting firm open the US market, working directly with Revfinery's president.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Cybersecurity or technology coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
     <li><b>The company:</b> a consulting firm that delivers cybersecurity, AI and custom software projects, and is building its first US sales channel.</li>
     <li><b>What you'll do:</b> research target companies, then reach security and IT leaders by email, LinkedIn and phone to book qualified meetings.</li>
@@ -121,13 +125,13 @@ details li{margin-bottom:8px}
     <li><b>What you'll learn:</b> how to build a target list, write outreach that gets replies and sell a technical service.</li>
     <li><b>Who it suits:</b> students with a cybersecurity or technology background are preferred.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/cohort" target="_blank" rel="noopener">I'm interested</a>
+   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20cybersecurity%20and%20AI%20consulting%20firm">I'm interested</a>
   </article>
 
-  <article class="role" data-type="ae" data-commit="part full" data-min="20" data-s="soon" style="--bar:#0c6b73">
-   <div class="top"><div><h2>Account Executive</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="status soon">Opening soon</span></div>
+  <article class="role" data-level="field" data-type="ae" data-commit="full" data-min="40" data-s="soon" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Account Executive</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
    <p class="sum">Close a steady flow of supplied leads for one of the world's largest B2B marketplaces.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>4 seats</dd></div><div><dt>Hours required</dt><dd>Part-time about 20 a week, or full-time about 40</dd></div><div><dt>When you're needed</dt><dd>Weekday business hours across US time zones, with demos booked at set times</dd></div><div><dt>Pay</dt><dd>Shared at interview</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
+   <dl class="facts"><div><dt>Openings</dt><dd>4 seats</dd></div><div><dt>Experience required</dt><dd>2 to 5 years, with experience closing deals</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$50,000 to $75,000 base, with on-target earnings of $80,000 to $115,000, depending on experience</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
     <li><b>The company:</b> a global B2B marketplace signing up US manufacturers and wholesalers through its partner program.</li>
     <li><b>What you'll do:</b> work leads the company supplies. You'll qualify each one, run the product demo, send the contract and close it.</li>
@@ -136,63 +140,64 @@ details li{margin-bottom:8px}
     <li><b>What you'll learn:</b> how to run a full sales cycle at volume and manage your own pipeline.</li>
     <li><b>Who it suits:</b> sellers with some closing experience, or strong BDRs ready to move into an AE seat.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/" target="_blank" rel="noopener">I'm interested</a>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20global%20B2B%20marketplace">I'm interested</a>
   </article>
 
-  <article class="role" data-type="bdr" data-commit="part full" data-min="15" data-s="soon" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="status soon">Opening soon</span></div>
+  <article class="role" data-level="cohort" data-type="bdr" data-commit="full" data-min="40" data-s="soon" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
    <p class="sum">Be the first conversation for new leads and set up demos for the account executives.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Hours required</dt><dd>Part-time about 15 to 20 a week, or full-time about 40</dd></div><div><dt>When you're needed</dt><dd>Weekday business hours, in blocks you set in advance</dd></div><div><dt>Pay</dt><dd>Shared at interview</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Open to graduating seniors and new graduates.</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$40,000 to $55,000 base, with on-target earnings of $55,000 to $70,000, depending on experience</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
     <li><b>The company:</b> a global B2B marketplace signing up US manufacturers and wholesalers through its partner program.</li>
     <li><b>What you'll do:</b> contact the leads the company supplies, qualify them against set criteria and book demos for the account executives.</li>
-    <li><b>Schedule:</b> part-time seats fit around classes, and full-time seats suit graduating seniors.</li>
+    <li><b>Schedule:</b> full-time, Monday to Friday, during regular business hours.</li>
     <li><b>Support:</b> you're part of a Revfinery-managed team with a team lead and weekly call reviews.</li>
     <li><b>What you'll learn:</b> how to qualify a buyer quickly and work a high volume of leads, with a path to an AE seat for strong performers.</li>
-    <li><b>Who it suits:</b> students and new graduates who want experience with a well-known global company.</li>
+    <li><b>Who it suits:</b> graduating seniors and new graduates who want full-time experience with a well-known global company.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/cohort" target="_blank" rel="noopener">I'm interested</a>
+   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20global%20B2B%20marketplace">I'm interested</a>
   </article>
 
-  <article class="role" data-type="lead" data-commit="full" data-min="40" data-s="soon" style="--bar:#f25025">
-   <div class="top"><div><h2>Sales Team Lead</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="status soon">Opening soon</span></div>
+  <article class="role" data-level="field bench" data-type="lead" data-commit="full" data-min="40" data-s="soon" style="--bar:#f25025">
+   <div class="top"><div><h2>Sales Team Lead</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
    <p class="sum">Lead and coach a team of sellers working one of the world's largest B2B marketplaces.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Hours required</dt><dd>About 40 a week</dd></div><div><dt>When you're needed</dt><dd>Weekday business hours, plus a weekly team review</dd></div><div><dt>Pay</dt><dd>Shared at interview</dd></div><div><dt>Level</dt><dd>Field or Bench</dd></div></dl>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>5 or more years, including coaching or leading other sellers</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours, plus a weekly team review</dd></div><div><dt>Pay</dt><dd>$65,000 to $90,000 base, with on-target earnings of $95,000 to $130,000, depending on experience</dd></div><div><dt>Level</dt><dd>Field or Bench</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
     <li><b>The company:</b> a global B2B marketplace signing up US manufacturers and wholesalers through its partner program.</li>
     <li><b>What you'll do:</b> manage a team of account executives and BDRs day to day, review their calls every week and report results to Revfinery and the client.</li>
     <li><b>What you own:</b> the team's activity, its pipeline and the quality of every demo.</li>
     <li><b>Support:</b> you work directly with Revfinery's leadership on coaching and strategy.</li>
     <li><b>What you'll learn:</b> how to run a sales team for a global brand, with a results record you can point to.</li>
-    <li><b>Who it suits:</b> sellers with three or more years of closing experience who have coached or led others.</li>
+    <li><b>Who it suits:</b> sellers with five or more years of closing experience who have coached or led others.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/" target="_blank" rel="noopener">I'm interested</a>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Sales%20Team%20Lead%2C%20global%20B2B%20marketplace">I'm interested</a>
   </article>
 
-  <p class="note">Roles marked "Opening soon" start once the client engagement begins. Apply now and we'll contact you first.</p>
+  <p class="note">Roles marked "Opening soon" start once the client engagement begins, and pay shown for those roles is an expected range confirmed at offer. Apply now and we'll contact you first.</p>
  </div>
 </main>
 
 <script>
 (function(){
  var roles=[].slice.call(document.querySelectorAll('.role')),
-     ft=document.getElementById('f-type'),fc=document.getElementById('f-commit'),fh=document.getElementById('f-hours'),fs=document.getElementById('f-status'),
+     ft=document.getElementById('f-type'),fc=document.getElementById('f-commit'),fh=document.getElementById('f-hours'),fs=document.getElementById('f-status'),fl=document.getElementById('f-level'),
      count=document.getElementById('count'),reset=document.getElementById('reset'),empty=document.getElementById('empty');
  function apply(){
-  var t=ft.value,c=fc.value,h=parseInt(fh.value,10),st=fs.value,n=0;
+  var t=ft.value,c=fc.value,h=parseInt(fh.value,10),st=fs.value,lv=fl.value,n=0;
   roles.forEach(function(r){
    var ok=(t==='all'||r.getAttribute('data-type')===t)
      &&(c==='all'||r.getAttribute('data-commit').split(' ').indexOf(c)>-1)
      &&(parseInt(r.getAttribute('data-min'),10)<=h)
-     &&(st==='all'||r.getAttribute('data-s')===st);
+     &&(st==='all'||r.getAttribute('data-s')===st)
+     &&(lv==='all'||r.getAttribute('data-level').split(' ').indexOf(lv)>-1);
    r.hidden=!ok; if(ok)n++;
   });
   count.textContent='Showing '+n+' of '+roles.length+' roles';
   empty.hidden=n>0;
-  reset.hidden=(t==='all'&&c==='all'&&fh.value==='99'&&st==='all');
+  reset.hidden=(t==='all'&&c==='all'&&fh.value==='99'&&st==='all'&&lv==='all');
  }
- [ft,fc,fh,fs].forEach(function(el){el.addEventListener('change',apply)});
- reset.addEventListener('click',function(){ft.value='all';fc.value='all';fh.value='99';fs.value='all';apply()});
+ [ft,fc,fh,fs,fl].forEach(function(el){el.addEventListener('change',apply)});
+ reset.addEventListener('click',function(){ft.value='all';fc.value='all';fh.value='99';fs.value='all';fl.value='all';apply()});
  apply();
 })();
 </script>
