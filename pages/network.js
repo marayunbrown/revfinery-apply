@@ -14,6 +14,7 @@ const INDUSTRIES = [
 
 const YEARS_OPTIONS = ['Less than 1 year', '1-3 years', '3-5 years', '5+ years'];
 const DEAL_SIZE_OPTIONS = ['Under $10K', '$10K - $50K', '$50K - $100K', '$100K+', 'Not applicable'];
+const HOURS_OPTIONS = ['Up to 10', '10 to 20', '20 to 30', 'Full-time'];
 const HEARD_FROM_OPTIONS = ['LinkedIn', 'Referral from a friend', 'Google search', 'Revfinery website', 'Social media', 'Skills Assessment', 'Other'];
 
 export default function TalentNetwork() {
@@ -28,6 +29,9 @@ export default function TalentNetwork() {
   const [assessmentTier, setAssessmentTier] = useState('');
   const [assessmentBlocker, setAssessmentBlocker] = useState('');
 
+  // Role from the job board link (?role=...)
+  const [role, setRole] = useState('');
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -38,6 +42,7 @@ export default function TalentNetwork() {
     currentRole: '',
     industries: [],
     typicalDealSize: '',
+    hoursAvailable: '',
     workInterests: '',
     lookingFor: '',
     takenAssessment: '',
@@ -49,7 +54,10 @@ export default function TalentNetwork() {
   // Read URL parameters on mount
   useEffect(() => {
     if (router.isReady) {
-      const { score, tier, blocker, email, firstName, lastName } = router.query;
+      const { score, tier, blocker, email, firstName, lastName, role: roleParam } = router.query;
+      if (roleParam) {
+        setRole(String(roleParam));
+      }
       if (score) {
         setFromAssessment(true);
         setAssessmentScore(score);
@@ -101,6 +109,13 @@ export default function TalentNetwork() {
   const submitToHubSpot = async () => {
     setIsSubmitting(true);
 
+    // Role and hours are added to the message so they reach HubSpot without needing new properties
+    const notes = [
+      role ? `Interested in: ${role}` : '',
+      formData.hoursAvailable ? `Hours available a week: ${formData.hoursAvailable}` : '',
+      formData.message
+    ].filter(Boolean).join(' | ');
+
     const data = {
       fields: [
         { name: 'firstname', value: formData.firstName },
@@ -117,7 +132,8 @@ export default function TalentNetwork() {
         { name: 'taken_assessment', value: formData.takenAssessment },
         { name: 'assessment_score', value: formData.assessmentScore },
         { name: 'heard_from', value: formData.heardFrom },
-        { name: 'message', value: formData.message }
+        { name: 'message', value: notes },
+        { name: 'application_type', value: 'The Field' }
       ],
       context: {
         pageUri: window.location.href,
@@ -165,6 +181,10 @@ export default function TalentNetwork() {
             <p style={{fontSize: '16px', color: '#4c5f62', marginBottom: '32px'}}>
               Thanks for applying to the Field. We'll review your application and be in touch soon.
             </p>
+            <a href="/roles/" style={{display: 'inline-block', padding: '14px 28px', backgroundColor: '#f25025', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', marginBottom: '12px'}}>
+              See open roles
+            </a>
+            <br />
             <a href="https://www.revfinery.com" style={{display: 'inline-block', padding: '14px 28px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600'}}>
               Back to Revfinery
             </a>
@@ -197,6 +217,13 @@ export default function TalentNetwork() {
             </span>
             <h1 style={{fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#0e2a2d'}}>Join the Field</h1>
             <p style={{color: '#4c5f62'}}>Get matched to BDR and AE roles that fit your experience</p>
+
+            {/* Show the role they came from on the job board */}
+            {role && (
+              <div style={{display: 'inline-block', marginTop: '16px', padding: '10px 16px', backgroundColor: '#fff7e8', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0e2a2d'}}>
+                You're applying for: {role}
+              </div>
+            )}
             
             {/* Show badge if from assessment */}
             {fromAssessment && assessmentScore && (
@@ -358,11 +385,27 @@ export default function TalentNetwork() {
                 </div>
 
                 <div style={{marginBottom: '24px'}}>
+                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Hours you can work a week</label>
+                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                    {HOURS_OPTIONS.map(option => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => updateField('hoursAvailable', option)}
+                        style={{padding: '10px 16px', border: formData.hoursAvailable === option ? '2px solid #f25025' : '2px solid #eaf6f7', borderRadius: '20px', backgroundColor: formData.hoursAvailable === option ? '#fff7e8' : 'white', cursor: 'pointer', fontSize: '14px', color: '#0e2a2d'}}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{marginBottom: '24px'}}>
                   <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>What kind of work interests you?</label>
                   <textarea
                     value={formData.workInterests}
                     onChange={(e) => updateField('workInterests', e.target.value)}
-                    placeholder="e.g., Fractional sales roles, project-based work, full-time opportunities..."
+                    placeholder="e.g., Part-time BDR or AE work, a full-time role, team lead opportunities..."
                     rows={3}
                     style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
                   />
