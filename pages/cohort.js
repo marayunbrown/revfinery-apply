@@ -1,17 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { ArrowLeft, ArrowRight, Check, CheckCircle, GraduationCap } from 'lucide-react';
 
 const HUBSPOT_PORTAL_ID = '244430724';
 const HUBSPOT_FORM_ID = '4d4e2afd-64de-4ed9-bd9b-57b6162ad4d0'; // Using network form, can change to cohort-specific
 
-const GRADUATION_YEARS = ['2024', '2025', '2026', '2027', '2028', 'Already graduated', 'N/A - Career changer'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const HOURS_OPTIONS = ['Up to 8', '8 to 15', '15 to 20', '20 to 30', 'Full-time'];
 const HEARD_FROM_OPTIONS = ['LinkedIn', 'University/Professor', 'Friend/Referral', 'Google search', 'Revfinery website', 'Social media', 'Other'];
 
 export default function CohortApplication() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [role, setRole] = useState('');
+  const [gradYears, setGradYears] = useState([]);
+  const [gradMonth, setGradMonth] = useState('');
+  const [gradYear, setGradYear] = useState('');
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -21,6 +26,7 @@ export default function CohortApplication() {
     school: '',
     major: '',
     graduationYear: '',
+    hoursAvailable: '',
     city: '',
     whySales: '',
     whatHoping: '',
@@ -30,8 +36,27 @@ export default function CohortApplication() {
 
   const totalSteps = 3;
 
+  // If the applicant came from the job board, the role they tapped arrives in the link (?role=...)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRole(params.get('role') || '');
+    // Year choices are built from today's date, so the list never needs updating
+    const thisYear = new Date().getFullYear();
+    setGradYears(Array.from({ length: 7 }, (_, i) => String(thisYear + i)));
+  }, []);
+
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Graduation is stored in one fixed format: "May 2028" or "Already graduated"
+  const updateGraduation = (month, year) => {
+    setGradMonth(month);
+    setGradYear(year);
+    let value = '';
+    if (year === 'Already graduated') value = 'Already graduated';
+    else if (month && year) value = `${month} ${year}`;
+    updateField('graduationYear', value);
   };
 
   const canProceed = () => {
@@ -50,6 +75,13 @@ export default function CohortApplication() {
   const submitToHubSpot = async () => {
     setIsSubmitting(true);
 
+    // Role and hours are added to the message so they reach HubSpot without needing new properties
+    const notes = [
+      role ? `Interested in: ${role}` : '',
+      formData.hoursAvailable ? `Hours available a week: ${formData.hoursAvailable}` : '',
+      formData.message
+    ].filter(Boolean).join(' | ');
+
     const data = {
       fields: [
         { name: 'firstname', value: formData.firstName },
@@ -63,7 +95,7 @@ export default function CohortApplication() {
         { name: 'why_sales', value: formData.whySales },
         { name: 'what_hoping', value: formData.whatHoping },
         { name: 'heard_from', value: formData.heardFrom },
-        { name: 'message', value: formData.message },
+        { name: 'message', value: notes },
         { name: 'application_type', value: 'University Cohort' }
       ],
       context: {
@@ -110,17 +142,24 @@ export default function CohortApplication() {
             </div>
             <h1 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '12px', color: '#0e2a2d'}}>Application Received!</h1>
             <p style={{color: '#4c5f62', marginBottom: '24px', lineHeight: '1.6'}}>
-              Thanks for applying to the University Cohort. We review applications weekly and will reach out with next steps — including your cohort code if accepted.
+              Thanks for applying to the University Cohort. We review applications weekly and will reach out with next steps, including your cohort code if you're accepted.
             </p>
             <div style={{padding: '16px', backgroundColor: '#fff7e8', borderRadius: '12px', marginBottom: '24px'}}>
               <p style={{fontSize: '14px', color: '#5b3e2a', fontWeight: '600', marginBottom: '8px'}}>What happens next:</p>
               <ul style={{textAlign: 'left', fontSize: '14px', color: '#3a5052', margin: '0', paddingLeft: '20px'}}>
                 <li style={{marginBottom: '4px'}}>We'll review your application</li>
-                <li style={{marginBottom: '4px'}}>If accepted, you'll receive your cohort code via email</li>
-                <li style={{marginBottom: '4px'}}>Sign up at trainer.revfinery.com with your code</li>
-                <li>Join the cohort Slack and start training!</li>
+                <li style={{marginBottom: '4px'}}>If accepted, you'll receive your cohort code by email</li>
+                <li style={{marginBottom: '4px'}}>Sign up at trainer.revfinery.com with your code and start training</li>
+                <li>We'll match you with paid BDR work as roles open</li>
               </ul>
             </div>
+            <a 
+              href="/roles/" 
+              style={{display: 'inline-block', padding: '12px 24px', backgroundColor: '#f25025', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', marginBottom: '12px'}}
+            >
+              See open roles
+            </a>
+            <br />
             <a 
               href="https://www.revfinery.com/talent-network" 
               style={{display: 'inline-block', padding: '12px 24px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600'}}
@@ -137,7 +176,7 @@ export default function CohortApplication() {
     <>
       <Head>
         <title>Apply | Revfinery University Cohort</title>
-        <meta name="description" content="Apply to the Revfinery University Cohort - 8 weeks of sales training for students and early-career professionals" />
+        <meta name="description" content="Apply to the Revfinery University Cohort for sales training and paid BDR work on a flexible schedule while you're still in university." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
       </Head>
@@ -155,8 +194,13 @@ export default function CohortApplication() {
               <GraduationCap size={16} />
               <span style={{fontWeight: '700', fontSize: '13px', color: '#0e2a2d'}}>University Cohort</span>
             </div>
-            <h1 style={{fontSize: '28px', fontWeight: 'bold', color: '#0e2a2d', margin: '0 0 8px'}}>Apply to the Next Cohort</h1>
-            <p style={{color: '#4c5f62', margin: '0'}}>8 weeks of virtual sales training. Certificate + job matching.</p>
+            <h1 style={{fontSize: '28px', fontWeight: 'bold', color: '#0e2a2d', margin: '0 0 8px'}}>Apply to the University Cohort</h1>
+            <p style={{color: '#4c5f62', margin: '0'}}>Sales training and paid BDR work on a flexible schedule while you're still in university.</p>
+            {role && (
+              <p style={{display: 'inline-block', margin: '14px 0 0', padding: '8px 14px', backgroundColor: '#eaf6f7', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0c6b73'}}>
+                You're applying for: {role}
+              </p>
+            )}
           </div>
 
           {/* Progress */}
@@ -269,25 +313,55 @@ export default function CohortApplication() {
                 </div>
 
                 <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Expected Graduation *</label>
+                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Expected Graduation *</label>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+                    <select
+                      value={gradMonth}
+                      onChange={(e) => updateGraduation(e.target.value, gradYear)}
+                      disabled={gradYear === 'Already graduated'}
+                      aria-label="Graduation month"
+                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box', backgroundColor: 'white', color: '#0e2a2d'}}
+                    >
+                      <option value="">Month</option>
+                      {MONTHS.map(month => (
+                        <option key={month} value={month}>{month}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={gradYear}
+                      onChange={(e) => updateGraduation(gradMonth, e.target.value)}
+                      aria-label="Graduation year"
+                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box', backgroundColor: 'white', color: '#0e2a2d'}}
+                    >
+                      <option value="">Year</option>
+                      {gradYears.map(year => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                      <option value="Already graduated">Already graduated</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{marginBottom: '24px'}}>
+                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Hours you can work a week</label>
                   <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
-                    {GRADUATION_YEARS.map(year => (
+                    {HOURS_OPTIONS.map(hours => (
                       <button
-                        key={year}
+                        key={hours}
                         type="button"
-                        onClick={() => updateField('graduationYear', year)}
+                        onClick={() => updateField('hoursAvailable', hours)}
                         style={{
                           padding: '10px 16px',
-                          border: formData.graduationYear === year ? '2px solid #ffd166' : '2px solid #eaf6f7',
+                          border: formData.hoursAvailable === hours ? '2px solid #ffd166' : '2px solid #eaf6f7',
                           borderRadius: '20px',
-                          backgroundColor: formData.graduationYear === year ? '#fff7e8' : 'white',
+                          backgroundColor: formData.hoursAvailable === hours ? '#fff7e8' : 'white',
                           cursor: 'pointer',
                           fontSize: '14px',
                           color: '#0e2a2d',
-                          fontWeight: formData.graduationYear === year ? '600' : '400'
+                          fontWeight: formData.hoursAvailable === hours ? '600' : '400'
                         }}
                       >
-                        {year}
+                        {hours}
                       </button>
                     ))}
                   </div>
@@ -309,7 +383,7 @@ export default function CohortApplication() {
                   <textarea
                     value={formData.whatHoping}
                     onChange={(e) => updateField('whatHoping', e.target.value)}
-                    placeholder="Skills, confidence, job opportunities, networking..."
+                    placeholder="Skills, confidence, paid experience, networking..."
                     rows={3}
                     style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
                   />
@@ -361,11 +435,10 @@ export default function CohortApplication() {
                 <div style={{marginTop: '24px', padding: '16px', backgroundColor: '#eaf6f7', borderRadius: '12px'}}>
                   <p style={{fontSize: '13px', color: '#0c6b73', fontWeight: '600', marginBottom: '8px'}}>What you're applying for:</p>
                   <ul style={{margin: '0', paddingLeft: '18px', fontSize: '13px', color: '#3a5052'}}>
-                    <li>8-week virtual sales training cohort</li>
-                    <li>Full access to AI Trainer platform</li>
-                    <li>Live kickoff + graduation sessions</li>
-                    <li>Private Slack community</li>
-                    <li>Certificate + job matching upon completion</li>
+                    <li>Sales training from working sellers</li>
+                    <li>Full access to the AI Trainer platform</li>
+                    <li>Paid BDR work on a flexible schedule while you're in university</li>
+                    <li>The chance to move into AE work once you've proven yourself</li>
                   </ul>
                 </div>
               </div>
