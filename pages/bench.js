@@ -13,7 +13,7 @@ const INDUSTRIES = [
   'Media / Entertainment', 'Real Estate', 'Education', 'Other'
 ];
 
-const YEARS_OPTIONS = ['5-7 years', '7-10 years', '10-15 years', '15+ years'];
+const YEARS_OPTIONS = ['10-15 years', '15+ years'];
 const DEAL_SIZE_OPTIONS = ['$50K - $100K', '$100K - $250K', '$250K - $500K', '$500K - $1M', '$1M+'];
 const TEAM_SIZE_OPTIONS = ['1-3 people', '4-7 people', '8-15 people', '15+ people'];
 const AVAILABILITY_OPTIONS = ['Immediately', '2-4 weeks', '1-2 months', 'Just exploring'];
@@ -22,7 +22,9 @@ const RATE_OPTIONS = ['$75-100/hr', '$100-150/hr', '$150-200/hr', '$200-250/hr',
 const HEARD_FROM_OPTIONS = ['LinkedIn', 'Referral from a friend', 'Google search', 'Revfinery website', 'Social media', 'Skills Assessment', 'Other'];
 
 const ENGAGEMENT_TYPES = [
+  'Senior / Enterprise Selling',
   'Fractional Sales Leadership',
+  'GTM Advisory',
   'Sales Training & Coaching', 
   'Pipeline Reviews',
   'Sales Process Design',
@@ -55,6 +57,9 @@ export default function RevfineryBench() {
   const [fromAssessment, setFromAssessment] = useState(false);
   const [assessmentScore, setAssessmentScore] = useState(null);
 
+  // Role from the job board link (?role=...)
+  const [role, setRole] = useState('');
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -83,7 +88,10 @@ export default function RevfineryBench() {
   // Read URL parameters on mount
   useEffect(() => {
     if (router.isReady) {
-      const { score, email, firstName, lastName } = router.query;
+      const { score, email, firstName, lastName, role: roleParam } = router.query;
+      if (roleParam) {
+        setRole(String(roleParam));
+      }
       if (score) {
         setFromAssessment(true);
         setAssessmentScore(score);
@@ -135,6 +143,12 @@ export default function RevfineryBench() {
   const submitToHubSpot = async () => {
     setIsSubmitting(true);
 
+    // The role from the job board is added to the message so it reaches HubSpot without a new property
+    const notes = [
+      role ? `Interested in: ${role}` : '',
+      formData.message
+    ].filter(Boolean).join(' | ');
+
     const data = {
       fields: [
         { name: 'firstname', value: formData.firstName },
@@ -158,7 +172,7 @@ export default function RevfineryBench() {
         { name: 'assessment_score', value: formData.assessmentScore },
         { name: 'portfolio_link', value: formData.portfolioLink },
         { name: 'heard_from', value: formData.heardFrom },
-        { name: 'message', value: formData.message }
+        { name: 'message', value: notes }
       ],
       context: {
         pageUri: window.location.href,
@@ -202,10 +216,14 @@ export default function RevfineryBench() {
             <div style={{width: '80px', height: '80px', margin: '0 auto 24px', borderRadius: '50%', backgroundColor: '#0c6b73', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               <Star style={{width: '40px', height: '40px', color: 'white'}} />
             </div>
-            <h1 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#0e2a2d'}}>Welcome to the Bench!</h1>
+            <h1 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#0e2a2d'}}>Application Received!</h1>
             <p style={{fontSize: '16px', color: '#4c5f62', marginBottom: '32px'}}>
-              Thanks for applying. We'll review your application and reach out soon about next steps.
+              Thanks for applying to the Bench. We'll review your application and reach out soon about next steps.
             </p>
+            <a href="/roles/" style={{display: 'inline-block', padding: '14px 28px', backgroundColor: '#f25025', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', marginBottom: '12px'}}>
+              See open roles
+            </a>
+            <br />
             <a href="https://www.revfinery.com" style={{display: 'inline-block', padding: '14px 28px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600'}}>
               Back to Revfinery
             </a>
@@ -238,6 +256,13 @@ export default function RevfineryBench() {
             </span>
             <h1 style={{fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#0e2a2d'}}>Apply to the Bench</h1>
             <p style={{color: '#4c5f62'}}>For experienced sellers and sales leaders with 10+ years</p>
+
+            {/* Show the role they came from on the job board */}
+            {role && (
+              <div style={{display: 'inline-block', marginTop: '16px', padding: '10px 16px', backgroundColor: '#eaf6f7', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0c6b73'}}>
+                You're applying for: {role}
+              </div>
+            )}
             
             {/* Show badge if from assessment with high score */}
             {fromAssessment && assessmentScore && parseInt(assessmentScore) >= 75 && (
@@ -343,6 +368,9 @@ export default function RevfineryBench() {
                       </label>
                     ))}
                   </div>
+                  <p style={{margin: '10px 0 0', fontSize: '13px', color: '#6b7d80'}}>
+                    Fewer than 10 years? <a href="/network/" style={{color: '#0c6b73', fontWeight: '600'}}>Apply to the Field</a> instead.
+                  </p>
                 </div>
 
                 <div style={{marginBottom: '24px'}}>
