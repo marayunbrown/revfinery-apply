@@ -76,14 +76,14 @@ details li{margin-bottom:8px}
   <div class="filters">
    <div><label for="f-type">Role</label><select id="f-type"><option value="all">All roles</option><option value="bdr">BDR</option><option value="ae">Account Executive</option><option value="lead">Sales Leader or Team Lead</option><option value="pm">Project Manager</option></select></div>
    <div><label for="f-level">Experience level</label><select id="f-level"><option value="all">Any level</option><option value="cohort">Cohort, less than 1 year</option><option value="field">Field, 1 to 10 years</option><option value="bench">Bench, 10+ years</option></select></div>
-   <div><label for="f-commit">Schedule</label><select id="f-commit"><option value="all">Any schedule</option><option value="part">Part-time</option><option value="full">Full-time</option></select></div>
-   <div><label for="f-hours">My hours a week</label><select id="f-hours"><option value="99">Any</option><option value="8">Up to 8</option><option value="20">Up to 20</option><option value="30">Up to 30</option><option value="40">40, full-time</option></select></div>
+   <div><label for="f-commit">Schedule</label><select id="f-commit"><option value="all">Any schedule</option><option value="low">Below 20 hours</option><option value="part">Part-time</option><option value="full">Full-time</option></select></div>
+   <div><label for="f-hours">My hours a week</label><select id="f-hours"><option value="99">Any</option><option value="10">Up to 10</option><option value="25">Up to 25</option><option value="40">40, full-time</option></select></div>
    <div><label for="f-status">Status</label><select id="f-status"><option value="all">Any status</option><option value="open">Open now</option><option value="soon">Opening soon</option></select></div>
   </div>
   <p class="count" aria-live="polite"><span id="count"></span><button type="button" id="reset" hidden>Clear filters</button></p>
   <div class="empty" id="empty" hidden>No roles match those filters yet. Try widening your hours or clearing the filters.</div>
 
-  <article class="role" data-level="cohort" data-type="bdr" data-commit="part" data-min="7" data-s="open" style="--bar:#e8a020">
+  <article class="role" data-level="cohort" data-type="bdr" data-commit="low" data-min="7" data-s="open" style="--bar:#e8a020">
    <div class="top"><div><h2>Business Development Representative, Cohort level, below 20 hours</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Start your sales career on Revfinery's own team, booking meetings for the clients we place you with.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. No prior sales job needed.</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule within business hours, with a weekly call review</dd></div><div><dt>Pay</dt><dd>$20 an hour, plus $50 for each meeting held</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
@@ -134,7 +134,7 @@ details li{margin-bottom:8px}
    <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20Cohort%20level%2C%2035-40%20hours%2C%20Revfinery">I'm interested</a>
   </article>
 
-  <article class="role" data-level="field" data-type="bdr" data-commit="part" data-min="7" data-s="open" style="--bar:#0c6b73">
+  <article class="role" data-level="field" data-type="bdr" data-commit="low" data-min="7" data-s="open" style="--bar:#0c6b73">
    <div class="top"><div><h2>Business Development Representative, Field level, below 20 hours</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Bring your prospecting experience to Revfinery's client teams and book qualified meetings with less ramp time.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>1 to 10 years, including at least a year of outbound prospecting</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule within business hours, with a weekly call review</dd></div><div><dt>Pay</dt><dd>$25 an hour, plus $50 for each meeting held</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
@@ -185,7 +185,7 @@ details li{margin-bottom:8px}
    <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20Field%20level%2C%2035-40%20hours%2C%20Revfinery">I'm interested</a>
   </article>
 
-  <article class="role" data-level="cohort" data-type="ae" data-commit="part" data-min="7" data-s="open" style="--bar:#e8a020">
+  <article class="role" data-level="cohort" data-type="ae" data-commit="low" data-min="7" data-s="open" style="--bar:#e8a020">
    <div class="top"><div><h2>Account Executive, Cohort level, below 20 hours</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Learn to close on Revfinery's client teams, running meetings on smaller deals with coaching on every one.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>Less than 1 year of closing. Prospecting or customer-facing experience preferred.</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule within business hours, with a weekly deal review</dd></div><div><dt>Pay</dt><dd>$28 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
@@ -236,7 +236,7 @@ details li{margin-bottom:8px}
    <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=Account%20Executive%2C%20Cohort%20level%2C%2035-40%20hours%2C%20Revfinery">I'm interested</a>
   </article>
 
-  <article class="role" data-level="field" data-type="ae" data-commit="part" data-min="7" data-s="open" style="--bar:#0c6b73">
+  <article class="role" data-level="field" data-type="ae" data-commit="low" data-min="7" data-s="open" style="--bar:#0c6b73">
    <div class="top"><div><h2>Account Executive, Field level, below 20 hours</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Run sales meetings and close deals for Revfinery's clients, with commission on every deal you close.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>1 to 10 years of B2B closing experience</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule within business hours, with a weekly deal review</dd></div><div><dt>Pay</dt><dd>$35 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
@@ -287,7 +287,7 @@ details li{margin-bottom:8px}
    <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Field%20level%2C%2035-40%20hours%2C%20Revfinery">I'm interested</a>
   </article>
 
-  <article class="role" data-level="bench" data-type="ae" data-commit="part" data-min="7" data-s="open" style="--bar:#f25025">
+  <article class="role" data-level="bench" data-type="ae" data-commit="low" data-min="7" data-s="open" style="--bar:#f25025">
    <div class="top"><div><h2>Account Executive, Bench level, below 20 hours</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Close larger and more complex deals for Revfinery's clients as a senior seller.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>10 or more years of B2B closing experience, including complex or enterprise deals</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule within business hours, with a weekly deal review</dd></div><div><dt>Pay</dt><dd>$65 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Bench</dd></div></dl>
@@ -338,7 +338,7 @@ details li{margin-bottom:8px}
    <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Bench%20level%2C%2035-40%20hours%2C%20Revfinery">I'm interested</a>
   </article>
 
-  <article class="role" data-level="bench" data-type="lead" data-commit="part" data-min="7" data-s="open" style="--bar:#f25025">
+  <article class="role" data-level="bench" data-type="lead" data-commit="low" data-min="7" data-s="open" style="--bar:#f25025">
    <div class="top"><div><h2>Sales Leader, Bench level, below 20 hours</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Lead strategy and coaching for a client's Revfinery sales team for a few hours each week.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>10 or more years in B2B sales, including leading or coaching a team</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Flexible, with a weekly team review and a client check-in during business hours</dd></div><div><dt>Pay</dt><dd>$100 an hour</dd></div><div><dt>Level</dt><dd>Bench</dd></div></dl>
@@ -383,7 +383,7 @@ details li{margin-bottom:8px}
    <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20EdTech%20company">I'm interested</a>
   </article>
 
-  <article class="role" data-level="cohort" data-type="bdr" data-commit="part" data-min="5" data-s="soon" style="--bar:#e8a020">
+  <article class="role" data-level="cohort" data-type="bdr" data-commit="low part" data-min="5" data-s="soon" style="--bar:#e8a020">
    <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">Cybersecurity and AI consulting firm expanding into the US</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
    <p class="sum">Help a technical consulting firm open the US market, working directly with Revfinery's president.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Cybersecurity or technology coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
@@ -398,7 +398,7 @@ details li{margin-bottom:8px}
    <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20cybersecurity%20and%20AI%20consulting%20firm">I'm interested</a>
   </article>
 
-  <article class="role" data-level="cohort" data-type="bdr" data-commit="part" data-min="5" data-s="open" style="--bar:#e8a020">
+  <article class="role" data-level="cohort" data-type="bdr" data-commit="low part" data-min="5" data-s="open" style="--bar:#e8a020">
    <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">HCM consulting firm that improves HR and payroll systems</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Help an HR technology consulting firm reach companies that are underusing their HR and payroll systems.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. HR, business or sales coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
@@ -457,7 +457,7 @@ details li{margin-bottom:8px}
    </ul></details>
    <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Sales%20Team%20Lead%2C%20global%20B2B%20marketplace">I'm interested</a>
   </article>
-  <article class="role" data-level="field" data-type="pm" data-commit="part" data-min="10" data-s="open" style="--bar:#0c6b73">
+  <article class="role" data-level="field" data-type="pm" data-commit="low part" data-min="10" data-s="open" style="--bar:#0c6b73">
    <div class="top"><div><h2>Project Manager, part-time</h2><p class="client">Revfinery, internal role</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
    <p class="sum">Keep Revfinery's client projects, consultants and Cohort sellers on track.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>2 or more years coordinating projects or teams. Sales or consulting exposure is a plus.</dd></div><div><dt>Hours required</dt><dd>About 10 to 15 a week</dd></div><div><dt>When you're needed</dt><dd>Flexible, with a few set check-ins during business hours each week</dd></div><div><dt>Pay</dt><dd>Hourly, shared at interview</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
