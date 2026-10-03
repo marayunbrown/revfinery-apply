@@ -2,1037 +2,372 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Revfinery quote and proposal builder</title>
+<title>Open Roles | Revfinery Talent Network</title>
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800;900&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#fbf6f1; --surface:#ffffff; --ink:#0e2a2d; --muted:#5c7072; --line:#dfe6e4;
-  --brand:#0c6b73; --brand-ink:#ffffff; --accent:#b8611a; --warn:#c2371a; --ok:#0c6b73; --chip:#eaf6f7;
-  --orange:#f25025; --yellow:#ffd166; --aqua:#eaf6f7; --peach:#fff7e8; --deep:#0e2a2d;
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#0b1c1e; --surface:#12292c; --ink:#e8f1f1; --muted:#9bb0b2; --line:#24413f;
-    --brand:#0c6b73; --brand-ink:#ffffff; --accent:#ffd166; --warn:#ff9a80; --ok:#6fd3d9; --chip:#18363a;
-    --aqua:#18363a; --peach:#3a2e18;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0b1c1e; --surface:#12292c; --ink:#e8f1f1; --muted:#9bb0b2; --line:#24413f;
-  --brand:#0c6b73; --brand-ink:#ffffff; --accent:#ffd166; --warn:#ff9a80; --ok:#6fd3d9; --chip:#18363a;
-  --aqua:#18363a; --peach:#3a2e18;
-}
-*,*::before,*::after{box-sizing:inherit}
+:root{--teal:#0c6b73;--teal-900:#084a4f;--ink:#0e2a2d;--orange:#f25025;--yellow:#ffd166;--bg:#fbf6f1;--card:#ffffff;--text:#0e2a2d;--muted:#3b5558;--line:#e3ecee;--chip:#eaf6f7;--soon:#fff7e8;--soon-t:#8a5a00;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1f21;--card:#12292c;--text:#eaf4f5;--muted:#a9c4c7;--line:#21403f;--chip:#17383b;--soon:#3a2f14;--soon-t:#ffd166}}
+:root[data-theme="dark"]{--bg:#0b1f21;--card:#12292c;--text:#eaf4f5;--muted:#a9c4c7;--line:#21403f;--chip:#17383b;--soon:#3a2f14;--soon-t:#ffd166}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.45}
-main{max-width:560px;margin:0 auto;padding:0 16px 40px}
-h1{font-size:1.4rem;font-weight:900;margin:20px 0 4px;letter-spacing:-.01em}
-.sub{color:var(--muted);margin:0 0 14px;font-size:.95rem}
-.result{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:linear-gradient(120deg,var(--deep),var(--brand));border-bottom:4px solid var(--orange);color:var(--brand-ink);border-radius:0 0 18px 18px;padding:14px 18px 16px;margin:0 -16px 18px}
-.result .lbl{font-size:.85rem;opacity:.85}
-.price{font-size:2.6rem;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.result .row{display:flex;gap:18px;margin-top:8px;font-size:.9rem;flex-wrap:wrap}
-.result .row b{font-variant-numeric:tabular-nums}
-section{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
-h2{font-size:1rem;font-weight:800;margin:0 0 10px}
-h3{font-size:.95rem;font-weight:800;margin:16px 0 6px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips button,.btn{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:9px 13px;border-radius:999px;cursor:pointer}
-.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.btn.primary{background:var(--orange);color:#fff;border-color:var(--orange);font-weight:800;padding:12px 18px;width:100%}
-.btn[disabled]{opacity:.5;cursor:default}
-button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-label{display:block;font-size:.85rem;color:var(--muted);font-weight:500}
-.field{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin-top:4px;padding:0 10px}
-.field span{color:var(--muted);font-weight:600}
-input{font:inherit;font-weight:600;color:var(--ink);background:transparent;border:0;width:100%;padding:11px 6px;font-variant-numeric:tabular-nums;min-width:0}
-input:focus{outline:none}
-.field:focus-within{border-color:var(--brand);box-shadow:0 0 0 2px color-mix(in srgb,var(--brand) 30%,transparent)}
-dl{margin:0;display:grid;grid-template-columns:1fr auto;row-gap:8px;column-gap:12px}
-dt{color:var(--muted)}
-dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
-dt.total,dd.total{color:var(--ink);font-weight:800;border-top:1px solid var(--line);padding-top:8px}
-.note{font-size:.9rem;margin:10px 0 0;font-weight:600}
-.note.bad{color:var(--warn)} .note.good{color:var(--ok)} .note.mid{color:var(--accent)}
-.reset{font:inherit;background:none;border:0;color:var(--muted);text-decoration:underline;padding:8px 0;cursor:pointer}
-details{margin-top:12px}
-summary{cursor:pointer;font-weight:600;color:var(--muted)}
-details .grid{margin-top:10px}
-.tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
-#preview{border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;background:var(--surface);font-size:.93rem;overflow:hidden}
-#preview .ph{background:#20494e;color:#fff;margin:-18px -18px 16px;padding:18px;border-bottom:5px solid var(--orange);display:grid;gap:2px}
-#preview .ph .logo{height:26px;width:auto;margin:0 0 8px;display:block}
-#preview .ph .kind{font-size:.8rem;color:#eaf6f7;margin-bottom:14px}
-#preview .ph b{font-size:1.3rem;font-weight:900;line-height:1.2}
-#preview .ph small{color:#eaf6f7}
-#preview h3{font-weight:900;font-size:1rem;margin:20px 0 8px;padding-left:10px;border-left:4px solid var(--orange)}
-#preview table{width:100%;border-collapse:collapse}
-#preview td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
-#preview td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
-#preview tr.t td{font-weight:800}
-#preview tr.save td{background:var(--peach);padding-left:6px;padding-right:6px}
-#preview p{margin:6px 0}
-#preview ul,#preview ol{margin:6px 0;padding-left:20px}
-#preview li::marker{color:var(--brand);font-weight:800}
-#preview .tier{display:inline-flex;flex-wrap:wrap;gap:4px 10px;background:var(--yellow);color:#0e2a2d;border-radius:999px;padding:6px 14px;margin:2px 0 8px;font-size:.88rem}
-#preview .tier b{font-weight:900}
-#preview .invest{background:var(--aqua);border-left:6px solid var(--brand);border-radius:14px;padding:14px 16px;margin-top:18px}
-#preview .invest span{font-size:.75rem;font-weight:800;letter-spacing:.04em;color:var(--ok)}
-#preview .big{font-size:1.9rem;font-weight:900;letter-spacing:-.02em}
-#preview .big small{font-size:.9rem;font-weight:500}
-#preview small{color:var(--muted)}
-#preview strong{color:var(--ok)}
-#preview .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
-#preview .stats div{background:var(--aqua);border-radius:12px;padding:10px}
-#preview .stats b{display:block;font-weight:900;color:var(--ok);font-size:1.05rem}
-#preview .cta{margin-top:16px;font-weight:800}
-#preview .cta span{display:inline-block;background:var(--orange);color:#fff;border-radius:999px;padding:8px 16px;margin-right:8px}
-@media (max-width:360px){.grid{grid-template-columns:1fr}.price{font-size:2.2rem}}
-select{font:inherit;font-weight:600;color:var(--ink);background:transparent;border:0;width:100%;padding:11px 6px}
-select:focus{outline:none}
-[hidden]{display:none!important}
-input:disabled{opacity:.45}
-.chips button.blend{border-style:dashed}
-.chips button.blend[aria-pressed="true"]{border-style:solid}
-h3{font-size:.92rem}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-weight:600;line-height:1.5;font-size:16px}
+.hero{background:radial-gradient(900px 320px at 20% -10%,rgba(255,255,255,.18),transparent 60%),linear-gradient(180deg,var(--teal),var(--teal-900));color:#fff;padding:44px 20px 40px}
+.wrap{max-width:900px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand img{height:38px;width:auto;display:block}
+.brand .wordmark{display:none;font-weight:900;font-size:26px;letter-spacing:-.02em;color:#fbf6f1}
+.brand .tn{font-weight:800;font-size:13px;color:var(--ink);background:var(--yellow);border-radius:999px;padding:4px 12px}
+h1{font-weight:900;font-size:clamp(32px,7vw,48px);line-height:1.05;letter-spacing:-.03em;margin:14px 0 10px}
+.hero p{margin:0;color:#dff1f2;max-width:52ch;font-size:17px}
+.hero p.open{display:inline-block;background:rgba(255,255,255,.14);border-radius:999px;padding:6px 14px;margin:0 0 12px;font-size:15px;color:#fff}
+.hero p.open b{color:var(--yellow);font-weight:900}
+main{padding:24px 16px 56px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.filters label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:4px}
+.filters select{width:100%;font:inherit;font-weight:800;font-size:15px;color:var(--text);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 12px}
+.count{font-size:14px;color:var(--muted);margin:10px 0 16px}
+.count button{font:inherit;font-weight:800;color:var(--teal);background:none;border:0;padding:0;margin-left:8px;text-decoration:underline;cursor:pointer}
+.empty{background:var(--card);border-radius:18px;padding:24px 20px;text-align:center;margin-bottom:16px}
+.empty[hidden]{display:none}
+select:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.role{background:var(--card);border-radius:0 0 18px 18px;border-top:5px solid var(--bar,var(--teal));box-shadow:0 10px 25px rgba(0,0,0,.10);padding:22px 20px;margin-bottom:16px}
+.role[hidden]{display:none}
+.top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.role h2{font-weight:900;font-size:21px;line-height:1.2;letter-spacing:-.01em;margin:0}
+.client{margin:4px 0 0;color:var(--muted);font-size:15px}
+.status{font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px;white-space:nowrap;background:var(--chip);color:var(--teal)}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.remote{font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px;white-space:nowrap;background:var(--ink);color:#fff}
+.status.soon{background:var(--soon);color:var(--soon-t)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .status:not(.soon){color:#9fe0e6}}
+:root[data-theme="dark"] .status:not(.soon){color:#9fe0e6}
+.sum{margin:12px 0 14px;font-size:16px}
+.facts{display:grid;gap:8px;margin:0 0 14px;padding:0}
+.facts div{background:var(--chip);border-radius:12px;padding:10px 12px}
+.facts dt{font-size:12px;font-weight:800;color:var(--muted);margin:0}
+.facts dd{margin:2px 0 0;font-size:15px;font-weight:800}
+details{border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:900;font-size:15px;color:var(--teal);list-style:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) summary{color:#9fe0e6}}
+:root[data-theme="dark"] summary{color:#9fe0e6}
+summary::-webkit-details-marker{display:none}
+summary::after{content:" +";font-weight:900}
+details[open] summary::after{content:" \2212"}
+details ul{margin:12px 0 4px;padding-left:18px;font-size:15px}
+details li{margin-bottom:8px}
+.btn{display:inline-block;margin-top:14px;background:var(--orange);color:#fff;text-decoration:none;font-weight:800;border-radius:999px;padding:12px 22px;font-size:15px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--chip);border-radius:16px;padding:6px;margin:0 0 10px}
+.tabs button{font:inherit;font-weight:800;font-size:14px;line-height:1.25;color:var(--muted);background:transparent;border:0;border-radius:12px;padding:10px 8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+.tabs span{display:inline-block;font-size:12px;opacity:.8}
+.tabnote{font-size:14px;color:var(--muted);margin:0 0 16px}
+.pick{font-size:13px;font-weight:800;color:var(--muted);margin:14px 0 0}
+.hours{display:flex;flex-wrap:wrap;gap:8px}
+.hours .btn{margin-top:8px;padding:11px 16px;font-size:14px}
+.hours .btn[hidden]{display:none}
+.note{font-size:14px;color:var(--muted);margin-top:22px;text-align:center}
+@media(min-width:640px){.facts{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(5,1fr)}main{padding:30px 20px 70px}.role{padding:26px 26px}}
 </style>
 </head>
 <body>
+<header class="hero">
+ <div class="wrap">
+  <div class="brand"><img src="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/6a9e233a3812883238b8de14_Revfinery%20Updated%20Logo%20Tan.avif" alt="Revfinery" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'"><span class="wordmark">Revfinery</span><span class="tn">Talent Network</span></div>
+  <h1>Open roles</h1>
+  <p class="open"><b id="total">29</b> openings across client teams and Revfinery's own team</p>
+  <p>Paid sales work with the companies we work with, and every role is remote. Tap a role to read the full description, then tell us you're interested.</p>
+ </div>
+</header>
+
 <main>
-  <div class="result" aria-live="polite">
-    <div class="lbl" id="rLbl">Monthly price to quote</div>
-    <div class="price" id="price">$0</div>
-    <div class="row">
-      <span>Loaded cost <b id="rLoaded">$0</b></span>
-      <span>Profit <b id="rProfit">$0</b></span>
-      <span>Margin <b id="rMargin">0%</b></span>
-    </div>
+ <div class="wrap">
+  <div class="filters">
+   <div><label for="f-type">Role</label><select id="f-type"><option value="all">All roles</option><option value="bdr">BDR</option><option value="ae">Account Executive</option><option value="lead">Sales Leader or Team Lead</option><option value="pm">Project Manager</option></select></div>
+   <div><label for="f-level">Experience level</label><select id="f-level"><option value="all">Any level</option><option value="cohort">Cohort, students and new sellers</option><option value="field">Field, 1 to 5 years</option><option value="bench">Bench, 5+ years</option></select></div>
+   <div><label for="f-commit">Schedule</label><select id="f-commit"><option value="all">Any schedule</option><option value="low">Below 20 hours</option><option value="part">Part-time</option><option value="full">Full-time</option></select></div>
+   <div><label for="f-hours">My hours a week</label><select id="f-hours"><option value="99">Any</option><option value="10">Up to 10</option><option value="25">Up to 25</option><option value="40">40, full-time</option></select></div>
+   <div><label for="f-status">Status</label><select id="f-status"><option value="all">Any status</option><option value="open">Open now</option><option value="soon">Opening soon</option></select></div>
   </div>
-
-  <h1>Quote and proposal builder</h1>
-  <p class="sub">Build the quote, check your margin, then download a client-ready proposal.</p>
-  <div class="chips" id="modes" style="margin-bottom:14px">
-    <button type="button" data-mode="single">Single seat</button>
-    <button type="button" data-mode="team">Sales team in a box</button>
+  <p class="count" aria-live="polite"><span id="count"></span><button type="button" id="reset" hidden>Clear filters</button></p>
+  <div class="tabs" role="tablist" aria-label="Role type">
+   <button type="button" role="tab" id="tab-client" data-tab="client" aria-selected="true">Roles with our clients <span id="n-client"></span></button>
+   <button type="button" role="tab" id="tab-rev" data-tab="rev" aria-selected="false">Roles on Revfinery's team <span id="n-rev"></span></button>
   </div>
+  <p class="tabnote" id="tabnote"></p>
+  <div class="empty" id="empty" hidden>No roles match those filters yet. Try widening your hours or clearing the filters.</div>
 
-  <section>
-    <h2>Customer company</h2>
-    <label for="client">Company name, shown here and on the proposal</label>
-    <div class="field"><input id="client" type="text" autocomplete="off" placeholder="Type the company name"></div>
-  </section>
+  <article class="role" data-group="client" data-level="cohort field" data-type="bdr" data-commit="full" data-min="40" data-s="open" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Business Development Representative, full-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Book qualified meetings with school district leaders for a growing EdTech company.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Experience required</dt><dd>Less than 1 year to 3 years. No prior sales job needed.</dd></div><div><dt>Hours required</dt><dd>About 40 a week</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$50,000 base plus incentives, with on-target earnings around $65,000</dd></div><div><dt>Level</dt><dd>Cohort or Field</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> an education technology company whose software is used by public school districts. You'd be employed directly by the company.</li>
+    <li><b>What you'll do:</b> call district and school leaders, work past gatekeepers and book qualified meetings for the company's account executives. You'll log every call and follow up on open conversations.</li>
+    <li><b>Support:</b> Revfinery reviews your recorded calls every week and gives you specific coaching.</li>
+    <li><b>What you'll learn:</b> phone prospecting, how to qualify a buyer and how public sector organizations buy.</li>
+    <li><b>Who it suits:</b> graduating seniors and early-career sellers who are comfortable on the phone and want a full-time start in tech sales.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20full-time%2C%20EdTech%20company">I'm interested</a>
+  </article>
 
-  <!-- ================= SINGLE ================= -->
-  <div id="single">
-    <section>
-      <h2>Role</h2>
-      <div class="chips" id="roles">
-        <button type="button" data-role="bdr">BDR</button>
-        <button type="button" data-role="ae">AE</button>
-        <button type="button" data-role="leader">Sales leader</button>
-      </div>
-      <h2 style="margin-top:16px">Level</h2>
-      <div class="chips" id="levels">
-        <button type="button" data-level="cohort">Cohort</button>
-        <button type="button" data-level="field">Field</button>
-        <button type="button" data-level="bench">Bench</button>
-      </div>
-      <h2 style="margin-top:16px">Hours per week</h2>
-      <div class="chips" id="tiers">
-        <button type="button" data-h="10">7–10</button>
-        <button type="button" data-h="25">20–25</button>
-        <button type="button" data-h="40">35–40</button>
-      </div>
-    </section>
-    <section>
-      <h2>Rep cost</h2>
-      <div class="grid">
-        <div><label for="pay">Hourly pay</label><div class="field"><span>$</span><input id="pay" inputmode="decimal"></div></div>
-        <div><label for="hours">Hours per week (top of range)</label><div class="field"><input id="hours" inputmode="decimal"></div></div>
-        <div><label for="bonus">Bonus per held meeting</label><div class="field"><span>$</span><input id="bonus" inputmode="decimal"></div></div>
-        <div><label for="meetings">Bookings expected per month</label><div class="field"><input id="meetings" inputmode="decimal"></div></div>
-        <div><label for="overhead">Overhead</label><div class="field"><input id="overhead" inputmode="decimal"><span>%</span></div></div>
-        <div><label for="margin">Target margin</label><div class="field"><input id="margin" inputmode="decimal"><span>%</span></div></div>
-      </div>
-      <dl style="margin-top:14px">
-        <dt>Hours per month</dt><dd id="oHours">0</dd>
-        <dt>Rep pay and bonuses</dt><dd id="oRep">$0</dd>
-        <dt>Employer taxes and benefits</dt><dd id="oTax">$0</dd>
-        <dt>Overhead</dt><dd id="oOver">$0</dd>
-        <dt>Exact price before rounding</dt><dd id="oExact">$0</dd>
-        <dt>What the client pays per hour</dt><dd id="oRate">$0</dd>
-      </dl>
-    </section>
-    <section>
-      <h2>Test a price you want to quote</h2>
-      <label for="quote">Your price per month</label>
-      <div class="field"><span>$</span><input id="quote" inputmode="decimal" placeholder="Leave empty to use the price above"></div>
-      <p class="note" id="quoteNote"></p>
-    </section>
-  </div>
+  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="part" data-min="25" data-s="open" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">A set weekday schedule of calling work at $25 an hour, with a bonus for every meeting attended.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. No experience needed.</dd></div><div><dt>Hours required</dt><dd>25 a week</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, 9 a.m. to 2 p.m.</dd></div><div><dt>Pay</dt><dd>$25 an hour, plus a bonus for each meeting attended</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> an education technology company whose software is used by public school districts.</li>
+    <li><b>What you'll do:</b> call district and school leaders, work past gatekeepers and book qualified meetings for the company's account executives.</li>
+    <li><b>Schedule:</b> a fixed block from 9 a.m. to 2 p.m., Monday to Friday, for 25 hours a week.</li>
+    <li><b>How you're measured:</b> on specific weekly KPIs, which we walk you through before you start.</li>
+    <li><b>Support:</b> Revfinery reviews your recorded calls every week and coaches you on what to change.</li>
+    <li><b>What you'll learn:</b> how to open a cold call, handle a gatekeeper and qualify a buyer, with real conversations to show future employers.</li>
+    <li><b>Who it suits:</b> current students with weekday mornings free who want paid sales experience before they graduate.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20EdTech%20company">I'm interested</a>
+  </article>
 
-  <!-- ================= TEAM ================= -->
-  <div id="team" hidden>
-    <section>
-      <h2>Team size</h2>
-      <p class="sub" style="margin-bottom:10px">Start here. The size sets the weekly hours, and your other entries stay as you left them.</p>
-      <div class="chips" id="teamTiers">
-        <button type="button" data-h="10">Starter, 7–10 hrs</button>
-        <button type="button" data-h="25">Growth, 20–25 hrs</button>
-        <button type="button" data-h="40">Full, 35–40 hrs</button>
-      </div>
-      <h3 id="bkTitle">Booking assumptions</h3>
-      <div class="grid">
-        <div><label for="bdrCap">BDR bookings per month</label><div class="field"><input id="bdrCap" inputmode="decimal"></div></div>
-        <div><label for="aeCap">AE bookings per month</label><div class="field"><input id="aeCap" inputmode="decimal"></div></div>
-      </div>
-      <p class="sub" id="bkNote" style="margin:10px 0 0"></p>
-    </section>
-    <section>
-      <h2>Customer's revenue target</h2>
-      <p class="sub" style="margin-bottom:10px">Optional. Enter their goal and the team size is set to match it.</p>
-      <div class="grid">
-        <div><label for="target">New revenue wanted in 12 months</label><div class="field"><span>$</span><input id="target" inputmode="decimal" placeholder="e.g. 500,000"></div></div>
-        <div><label for="avgDeal">Average deal size, year one</label><div class="field"><span>$</span><input id="avgDeal" inputmode="decimal"></div></div>
-        <div><label for="closeRate">Meetings that become deals</label><div class="field"><input id="closeRate" inputmode="decimal"><span>%</span></div></div>
-      </div>
-      <p class="note" id="goalNote"></p>
-      <button type="button" class="btn" id="useRec" style="margin-top:10px" hidden>Use the recommended team</button>
-    </section>
-    <section>
-      <h2>What the client needs from you</h2>
-      <p class="sub" style="margin-bottom:10px">Turn off anything they already have.</p>
-      <div class="chips" id="parts">
-        <button type="button" data-part="inBdr">BDR</button>
-        <button type="button" data-part="inAe">AE</button>
-        <button type="button" data-part="inLd">Sales leader</button>
-        <button type="button" data-part="inPm">Project manager</button>
-      </div>
-      <p class="note" id="partsNote"></p>
-    </section>
-    <section id="secBdr">
-      <h2>BDR</h2>
-      <div class="chips lv" data-for="b" style="margin-bottom:12px">
-        <button type="button" data-level="cohort">Cohort</button>
-        <button type="button" data-level="field">Field</button>
-        <button type="button" data-blend="1" class="blend">Blended team</button>
-      </div>
-      <div class="grid" id="bOne">
-        <div><label for="tBdrN">Number of BDRs</label><div class="field"><input id="tBdrN" inputmode="numeric"></div></div>
-        <div><label for="tBdrPay">Hourly pay</label><div class="field"><span>$</span><input id="tBdrPay" inputmode="decimal"></div></div>
-      </div>
-      <div class="grid" id="bMix" hidden>
-        <div><label for="nBC">Cohort BDRs</label><div class="field"><input id="nBC" inputmode="numeric"></div></div>
-        <div><label for="pBC">Cohort hourly pay</label><div class="field"><span>$</span><input id="pBC" inputmode="decimal"></div></div>
-        <div><label for="nBF">Field BDRs</label><div class="field"><input id="nBF" inputmode="numeric"></div></div>
-        <div><label for="pBF">Field hourly pay</label><div class="field"><span>$</span><input id="pBF" inputmode="decimal"></div></div>
-      </div>
-      <div class="grid" style="margin-top:12px">
-        <div><label for="tBdrHours">Hours per week, each</label><div class="field"><input id="tBdrHours" inputmode="decimal"></div></div>
-        <div><label for="tBonus">Bonus per held meeting</label><div class="field"><span>$</span><input id="tBonus" inputmode="decimal"></div></div>
-      </div>
-    </section>
-    <section id="secAe">
-      <h2>AE</h2>
-      <div class="chips lv" data-for="a" style="margin-bottom:12px">
-        <button type="button" data-level="cohort">Cohort</button>
-        <button type="button" data-level="field">Field</button>
-        <button type="button" data-level="bench">Bench</button>
-        <button type="button" data-blend="1" class="blend">Blended team</button>
-      </div>
-      <div class="grid" id="aOne">
-        <div><label for="tAeN">Number of AEs</label><div class="field"><input id="tAeN" inputmode="numeric"></div></div>
-        <div><label for="tAePay">Hourly pay</label><div class="field"><span>$</span><input id="tAePay" inputmode="decimal"></div></div>
-      </div>
-      <div class="grid" id="aMix" hidden>
-        <div><label for="nAC">Cohort AEs</label><div class="field"><input id="nAC" inputmode="numeric"></div></div>
-        <div><label for="pAC">Cohort hourly pay</label><div class="field"><span>$</span><input id="pAC" inputmode="decimal"></div></div>
-        <div><label for="nAF">Field AEs</label><div class="field"><input id="nAF" inputmode="numeric"></div></div>
-        <div><label for="pAF">Field hourly pay</label><div class="field"><span>$</span><input id="pAF" inputmode="decimal"></div></div>
-        <div><label for="nAB">Bench AEs</label><div class="field"><input id="nAB" inputmode="numeric"></div></div>
-        <div><label for="pAB">Bench hourly pay</label><div class="field"><span>$</span><input id="pAB" inputmode="decimal"></div></div>
-      </div>
-      <div class="grid" style="margin-top:12px">
-        <div><label for="tAeHours">Hours per week, each</label><div class="field"><input id="tAeHours" inputmode="decimal"></div></div>
-      </div>
-    </section>
-    <section id="secLd">
-      <h2>Sales leader, Bench</h2>
-      <div id="ldOff">
-        <p class="sub" style="margin-bottom:10px">No sales leader on this quote yet.</p>
-        <button type="button" class="btn" id="addLd">Add a sales leader</button>
-      </div>
-      <div id="ldOn">
-      <div class="chips" id="ldModes" style="margin-bottom:12px">
-        <button type="button" data-ld="hourly">Paid hourly</button>
-        <button type="button" data-ld="salary">Paid a salary</button>
-      </div>
-      <div class="grid">
-        <div id="fLdPay"><label for="tLdPay">Hourly pay</label><div class="field"><span>$</span><input id="tLdPay" inputmode="decimal"></div></div>
-        <div id="fLdSal"><label for="tLdSalary">Annual salary</label><div class="field"><span>$</span><input id="tLdSalary" inputmode="decimal"></div></div>
-        <div><label for="tLdHours">Hours per week</label><div class="field"><input id="tLdHours" inputmode="decimal"></div></div>
-      </div>
-      <p class="note" id="ldNote"></p>
-      <button type="button" class="reset" id="removeLd">Remove the sales leader</button>
-      </div>
-    </section>
-    <section id="secPm">
-      <h2>Project manager</h2>
-      <div class="chips" id="pmModes" style="margin-bottom:12px">
-        <button type="button" data-pm-mode="account">Paid per account</button>
-        <button type="button" data-pm-mode="fixed">Fixed monthly pay</button>
-      </div>
-      <div class="grid">
-        <div id="fPer"><label for="pmPer">Manager pay for this team, per month</label><div class="field"><span>$</span><input id="pmPer" inputmode="decimal"></div></div>
-        <div id="fPay"><label for="pmPay">Manager's fixed monthly pay</label><div class="field"><span>$</span><input id="pmPay" inputmode="decimal"></div></div>
-        <div><label for="pmCap">Teams this size one manager can run</label><div class="field"><input id="pmCap" inputmode="decimal"></div></div>
-      </div>
-      <p class="note" id="pmNote"></p>
-    </section>
-    <section>
-      <h2>Reserve and margin</h2>
-      <div class="grid">
-        <div><label for="reserve">Tools and backup reserve</label><div class="field"><input id="reserve" inputmode="decimal"><span>%</span></div></div>
-        <div><label for="tMargin">Target margin</label><div class="field"><input id="tMargin" inputmode="decimal"><span>%</span></div></div>
-      </div>
-      <dl style="margin-top:14px">
-        <dt>BDR pay and bonuses</dt><dd id="tBdr">$0</dd>
-        <dt>AE pay</dt><dd id="tAe">$0</dd>
-        <dt>Sales leader pay</dt><dd id="tLd">$0</dd>
-        <dt>Project manager share built into the price</dt><dd id="tPm">$0</dd>
-        <dt>Employer taxes and benefits</dt><dd id="tTax">$0</dd>
-        <dt>Reserve</dt><dd id="tRes">$0</dd>
-        <dt>Exact price before rounding</dt><dd id="tExact">$0</dd>
-      </dl>
-    </section>
-    <section>
-      <h2>Test a price you want to quote</h2>
-      <label for="tQuote">Your team price per month</label>
-      <div class="field"><span>$</span><input id="tQuote" inputmode="decimal" placeholder="Leave empty to use the price above"></div>
-      <p class="note" id="tQuoteNote"></p>
-    </section>
-    <section id="secComm">
-      <h2>Commission on a closed deal</h2>
-      <p class="sub" style="margin-bottom:10px">Uses the average deal size from the revenue target above.</p>
-      <div class="grid">
-        <div><label for="commRate">Commission rate</label><div class="field"><input id="commRate" inputmode="decimal"><span>%</span></div></div>
-        <div><label for="aeSplit">AE's share of commission</label><div class="field"><input id="aeSplit" inputmode="decimal"><span>%</span></div></div>
-      </div>
-      <dl style="margin-top:14px">
-        <dt>Client pays Revfinery</dt><dd id="cTotal">$0</dd>
-        <dt>AE receives</dt><dd id="cAe">$0</dd>
-        <dt>Revfinery keeps</dt><dd id="cKeep">$0</dd>
-      </dl>
-    </section>
-  </div>
+  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="low part" data-min="5" data-s="soon" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">Cybersecurity and AI consulting firm expanding into the US</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
+   <p class="sum">Help a technical consulting firm open the US market, working directly with Revfinery's president.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Cybersecurity or technology coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a consulting firm that delivers cybersecurity, AI and custom software projects, and is building its first US sales channel.</li>
+    <li><b>What you'll do:</b> research target companies, then reach security and IT leaders by email, LinkedIn and phone to book qualified meetings.</li>
+    <li><b>How you're measured:</b> on weekly activity targets, not hours. You choose when to work, with calls made during business hours.</li>
+    <li><b>Support:</b> a weekly coaching session with Revfinery's president, who runs every meeting you book.</li>
+    <li><b>What you'll learn:</b> how to build a target list, write outreach that gets replies and sell a technical service.</li>
+    <li><b>Who it suits:</b> students with a cybersecurity or technology background are preferred.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20cybersecurity%20and%20AI%20consulting%20firm">I'm interested</a>
+  </article>
 
-  <!-- ================= SHARED ================= -->
-  <section>
-    <h2>Employment and taxes</h2>
-    <div class="chips" id="empModes" style="margin-bottom:6px">
-      <button type="button" data-emp="1099">1099 contractor</button>
-      <button type="button" data-emp="w2">W-2 employee</button>
-    </div>
-    <p class="note" id="empNote" style="margin:6px 0 12px"></p>
-    <div id="w2Fields">
-      <label for="st">State the rep lives in</label>
-      <div class="field"><select id="st"></select></div>
-      <div class="grid" style="margin-top:12px">
-        <div><label for="suiRate">State unemployment rate</label><div class="field"><input id="suiRate" inputmode="decimal"><span>%</span></div></div>
-        <div><label for="suiBase">Wages the state taxes, per year</label><div class="field"><span>$</span><input id="suiBase" inputmode="decimal"></div></div>
-        <div><label for="benefits">Benefits, full-time W-2 only</label><div class="field"><input id="benefits" inputmode="decimal"><span>%</span></div></div>
-      </div>
-      <dl style="margin-top:14px">
-        <dt>Employer taxes per month</dt><dd id="eTax">$0</dd>
-        <dt>Benefits per month</dt><dd id="eBen">$0</dd>
-      </dl>
-      <p class="note" id="stNote"></p>
-    </div>
-  </section>
+  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="low part" data-min="5" data-s="open" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">HCM consulting firm that improves HR and payroll systems</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Help an HR technology consulting firm reach companies that are underusing their HR and payroll systems.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. HR, business or sales coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a human capital management (HCM) consulting firm that helps companies fix, optimize or switch their HR and payroll systems.</li>
+    <li><b>What you'll do:</b> research target companies, then reach HR and payroll leaders by email, LinkedIn and phone to book qualified meetings.</li>
+    <li><b>How you're measured:</b> on weekly activity targets, not hours. You choose when to work, with calls made during business hours.</li>
+    <li><b>Support:</b> a weekly coaching session with Revfinery's president, who runs every meeting you book.</li>
+    <li><b>What you'll learn:</b> how to build a target list, write outreach that gets replies and sell a consulting service to HR leaders.</li>
+    <li><b>Who it suits:</b> students interested in HR, business or sales are a good fit.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20HCM%20consulting%20firm">I'm interested</a>
+  </article>
 
-  <section>
-    <h2>Contract length <span class="tag">term on proposal, totals hidden</span></h2>
-    <div class="chips" id="termUnits" style="margin-bottom:12px">
-      <button type="button" data-unit="months">Months</button>
-      <button type="button" data-unit="years">Years</button>
-    </div>
-    <label for="months" id="termLbl">Number of months</label>
-    <div class="field"><input id="months" inputmode="numeric"></div>
-    <dl style="margin-top:14px">
-      <dt>Monthly investment</dt><dd id="mMonthly">$0</dd>
-      <dt>Fees over the term</dt><dd id="mFee">$0</dd>
-      <dt>Estimated commission over the term</dt><dd id="mComm">$0</dd>
-      <dt class="total">Total contract value</dt><dd class="total" id="mTotal">$0</dd>
-      <dt>Your cost over the term</dt><dd id="mCost">$0</dd>
-      <dt class="total">Your profit over the term</dt><dd class="total" id="mProfit">$0</dd>
-    </dl>
-    <p class="note" id="mNote"></p>
-  </section>
+  <article class="role" data-group="client" data-level="field" data-type="ae" data-commit="full" data-min="40" data-s="soon" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Account Executive</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
+   <p class="sum">Sign up US suppliers for one of the world's largest B2B marketplaces and grow their accounts after the sale.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>4 seats</dd></div><div><dt>Experience required</dt><dd>2 to 5 years of consultative B2B subscription, SaaS or marketplace sales. Must be based in the US.</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$50,000 to $75,000 base, with on-target earnings of $80,000 to $115,000, depending on experience</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
+    <li><b>What you'll do:</b> own each supplier from first contact through discovery, proposal, close and registration. You work an assigned pool of leads and add your own prospecting.</li>
+    <li><b>After the sale:</b> you keep your accounts and help each supplier with onboarding, advertising, upgrades and renewal.</li>
+    <li><b>Support:</b> you're part of a Revfinery-managed team with a team lead and weekly call reviews, and the client provides product training and a playbook.</li>
+    <li><b>What you'll learn:</b> how to run a full sales cycle at volume and grow a book of accounts you own.</li>
+    <li><b>Who it suits:</b> sellers with closing experience in subscription, SaaS or marketplace sales who know the US supplier market.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20global%20B2B%20marketplace">I'm interested</a>
+  </article>
 
-  <section>
-    <h2>If the client hired these roles full time <span class="tag" id="cmpTag">shown on proposal</span></h2>
-    <p class="sub" style="margin-bottom:10px">In-house roles are almost always full-time hires, so every role is costed as one full-time person.</p>
-    <dl>
-      <dt>Base salaries</dt><dd id="ihSal">$0</dd>
-      <dt>Incentive pay at target</dt><dd id="ihInc">$0</dd>
-      <dt>Payroll taxes and benefits</dt><dd id="ihTax">$0</dd>
-      <dt>Sales tools and data</dt><dd id="ihToolsO">$0</dd>
-      <dt>Hiring and training, spread over 12 months</dt><dd id="ihHireO">$0</dd>
-      <dt>Management time</dt><dd id="ihMgrO">$0</dd>
-      <dt class="total">Estimated in-house cost per month</dt><dd class="total" id="ihTotal">$0</dd>
-      <dt>Your fee</dt><dd id="rvFee">$0</dd>
-      <dt>Estimated commission at target</dt><dd id="rvComm">$0</dd>
-      <dt class="total">Revfinery total per month</dt><dd class="total" id="rvTotal">$0</dd>
-    </dl>
-    <p class="note" id="ihNote"></p>
-    <details>
-      <summary>Change in-house assumptions</summary>
-      <div class="grid">
-        <div><label for="sBC">BDR Cohort, base salary</label><div class="field"><span>$</span><input id="sBC" inputmode="decimal"></div></div>
-        <div><label for="oBC">BDR Cohort, on-target earnings</label><div class="field"><span>$</span><input id="oBC" inputmode="decimal"></div></div>
-        <div><label for="sBF">BDR Field, base salary</label><div class="field"><span>$</span><input id="sBF" inputmode="decimal"></div></div>
-        <div><label for="oBF">BDR Field, on-target earnings</label><div class="field"><span>$</span><input id="oBF" inputmode="decimal"></div></div>
-        <div><label for="sAC">AE Cohort, base salary</label><div class="field"><span>$</span><input id="sAC" inputmode="decimal"></div></div>
-        <div><label for="oAC">AE Cohort, on-target earnings</label><div class="field"><span>$</span><input id="oAC" inputmode="decimal"></div></div>
-        <div><label for="sAF">AE Field, base salary</label><div class="field"><span>$</span><input id="sAF" inputmode="decimal"></div></div>
-        <div><label for="oAF">AE Field, on-target earnings</label><div class="field"><span>$</span><input id="oAF" inputmode="decimal"></div></div>
-        <div><label for="sAB">AE Bench, base salary</label><div class="field"><span>$</span><input id="sAB" inputmode="decimal"></div></div>
-        <div><label for="oAB">AE Bench, on-target earnings</label><div class="field"><span>$</span><input id="oAB" inputmode="decimal"></div></div>
-        <div><label for="sLB">Sales leader, base salary</label><div class="field"><span>$</span><input id="sLB" inputmode="decimal"></div></div>
-        <div><label for="oLB">Sales leader, on-target earnings</label><div class="field"><span>$</span><input id="oLB" inputmode="decimal"></div></div>
-        <div><label for="ihTb">Taxes and benefits, on salary</label><div class="field"><input id="ihTb" inputmode="decimal"><span>%</span></div></div>
-        <div><label for="ihTools">Tools per person, per month</label><div class="field"><span>$</span><input id="ihTools" inputmode="decimal"></div></div>
-        <div><label for="ihHire">Hiring and training, per hire</label><div class="field"><span>$</span><input id="ihHire" inputmode="decimal"></div></div>
-        <div><label for="ihMgr">Manager time per rep, per month</label><div class="field"><span>$</span><input id="ihMgr" inputmode="decimal"></div></div>
-      </div>
-    </details>
-  </section>
+  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="full" data-min="40" data-s="soon" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
+   <p class="sum">Find and qualify US suppliers, and book meetings for the account executives.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Open to graduating seniors and new graduates. Must be based in the US.</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$40,000 to $55,000 base, with on-target earnings of $55,000 to $70,000, depending on experience</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
+    <li><b>What you'll do:</b> prospect new supplier accounts by phone and email, qualify them against set criteria and book meetings for the account executives.</li>
+    <li><b>Schedule:</b> full-time, Monday to Friday, during regular business hours.</li>
+    <li><b>Support:</b> you're part of a Revfinery-managed team with a team lead and weekly call reviews.</li>
+    <li><b>What you'll learn:</b> how to build a target list, open a conversation and qualify a buyer, with a path to an AE seat for strong performers.</li>
+    <li><b>Who it suits:</b> graduating seniors and new graduates who want full-time experience with a well-known global company.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20global%20B2B%20marketplace">I'm interested</a>
+  </article>
 
-  <section>
-    <h2>Proposal</h2>
-    <p class="sub" style="margin-bottom:12px">The proposal shows the team, the price and why companies outsource. Any quote that costs less than hiring in-house also shows the comparison. Your costs and margin are always left out.</p>
-    <button type="button" class="btn primary" id="dl">Download proposal PDF</button>
-    <p class="note" id="dlNote"></p>
-    <div id="preview" aria-label="Proposal preview"></div>
-  </section>
+  <article class="role" data-group="client" data-level="field bench" data-type="lead" data-commit="full" data-min="40" data-s="soon" style="--bar:#f25025">
+   <div class="top"><div><h2>Sales Team Lead</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
+   <p class="sum">Lead and coach a team of sellers working one of the world's largest B2B marketplaces.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>5 or more years, including coaching or leading other sellers. Must be based in the US.</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours, plus a weekly team review</dd></div><div><dt>Pay</dt><dd>$65,000 to $90,000 base, with on-target earnings of $95,000 to $130,000, depending on experience</dd></div><div><dt>Level</dt><dd>Field or Bench</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
+    <li><b>What you'll do:</b> manage a team of four account executives and one BDR day to day, review their calls every week and run the forecast.</li>
+    <li><b>What you own:</b> the team's activity, pipeline and results, the weekly business review with the client, and renewals and account growth across the team's suppliers.</li>
+    <li><b>Support:</b> you work directly with Revfinery's leadership on coaching and strategy.</li>
+    <li><b>What you'll learn:</b> how to run a sales team for a global brand, with a results record you can point to.</li>
+    <li><b>Who it suits:</b> sellers with five or more years of closing experience who have coached or led others.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Sales%20Team%20Lead%2C%20global%20B2B%20marketplace">I'm interested</a>
+  </article>
 
-  <section>
-    <details id="plan">
-      <summary>Planning only: if several clients buy this same quote</summary>
-      <p class="sub" style="margin:10px 0">This doesn't change the quote or the proposal. It shows what you'd earn if more than one client bought it.</p>
-      <label for="teams">Number of clients buying it</label>
-      <div class="field"><input id="teams" inputmode="numeric"></div>
-      <p class="note mid" id="teamsNote"></p>
-      <dl style="margin-top:14px">
-        <dt>Your monthly revenue from them</dt><dd id="tRev">$0</dd>
-        <dt>Project managers needed</dt><dd id="tPmTotal">0</dd>
-        <dt>Your monthly profit after all pay</dt><dd id="tProf">$0</dd>
-        <dt>Your margin on those teams</dt><dd id="tReal">0%</dd>
-      </dl>
-    </details>
-  </section>
+  <article class="role multi" data-group="rev" data-level="cohort" data-type="bdr" data-s="open" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, Cohort level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Start your sales career on Revfinery's own team, booking meetings for the clients we place you with.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>Students, new graduates and career changers. No prior sales job needed.</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$20 an hour, plus $50 for each meeting held</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
+    <li><b>What you'll do:</b> research target accounts, reach buyers by phone, email and LinkedIn, and book qualified meetings for the account executive on your team.</li>
+    <li><b>How you're measured:</b> on weekly KPIs agreed with the client, which your project manager tracks and reviews with you.</li>
+    <li><b>Support:</b> weekly call reviews and coaching, plus full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> students, new graduates and career changers who want paid sales experience with coaching built in.</li>
+   </ul></details>
+   <p class="pick">Choose your hours to apply</p>
+   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20Cohort%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20Cohort%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20Cohort%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
+  </article>
 
-  <button class="reset" id="clearQuote" type="button">Clear this quote</button>
-  <button class="reset" id="resetAll" type="button" style="margin-left:14px">Restore default assumptions</button>
+  <article class="role multi" data-group="rev" data-level="field" data-type="bdr" data-s="open" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Business Development Representative, Field level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Bring your prospecting experience to Revfinery's client teams and book qualified meetings with less ramp time.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>1 to 5 years in a paid sales role, including outbound prospecting</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$25 an hour, plus $50 for each meeting held</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
+    <li><b>What you'll do:</b> build and work a target account list, reach buyers by phone, email and LinkedIn, and book qualified meetings for the account executive on your team.</li>
+    <li><b>How you're measured:</b> on weekly KPIs agreed with the client, which your project manager tracks and reviews with you.</li>
+    <li><b>Support:</b> weekly call reviews, plus full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> sellers who have prospected before and can run their own outreach with light direction.</li>
+   </ul></details>
+   <p class="pick">Choose your hours to apply</p>
+   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20Field%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20Field%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20Field%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
+  </article>
+
+  <article class="role multi" data-group="rev" data-level="cohort" data-type="ae" data-s="open" style="--bar:#e8a020">
+   <div class="top"><div><h2>Account Executive, Cohort level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Learn to close on Revfinery's client teams, running meetings on smaller deals with coaching on every one.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>Under a year in a paid closing role. Prospecting or customer-facing experience preferred.</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$28 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
+    <li><b>What you'll do:</b> run discovery calls from the meetings your BDR books, write proposals, follow up and close, starting with smaller and simpler deals.</li>
+    <li><b>How you're measured:</b> on the KPIs and revenue targets agreed with the client at kickoff.</li>
+    <li><b>Support:</b> a weekly deal review with Revfinery's leadership, coaching before important calls, and full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> BDRs ready for their first closing role, and early-career sellers who want to move into full-cycle sales.</li>
+   </ul></details>
+   <p class="pick">Choose your hours to apply</p>
+   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/cohort/?role=Account%20Executive%2C%20Cohort%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/cohort/?role=Account%20Executive%2C%20Cohort%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/cohort/?role=Account%20Executive%2C%20Cohort%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
+  </article>
+
+  <article class="role multi" data-group="rev" data-level="field" data-type="ae" data-s="open" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Account Executive, Field level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Run sales meetings and close deals for Revfinery's clients, with commission on every deal you close.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>1 to 5 years in a paid sales role, with B2B closing experience</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$35 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
+    <li><b>What you'll do:</b> run discovery calls and demos from the meetings your BDR books, write proposals, follow up and close.</li>
+    <li><b>What you own:</b> your pipeline and forecast, kept current in the client's CRM.</li>
+    <li><b>How you're measured:</b> on the KPIs and revenue targets agreed with the client at kickoff.</li>
+    <li><b>Support:</b> weekly deal reviews with Revfinery's leadership, plus full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> proven B2B sellers who can run a full sales cycle on their own.</li>
+   </ul></details>
+   <p class="pick">Choose your hours to apply</p>
+   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Field%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Field%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Field%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
+  </article>
+
+  <article class="role multi" data-group="rev" data-level="bench" data-type="ae" data-s="open" style="--bar:#f25025">
+   <div class="top"><div><h2>Account Executive, Bench level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Close larger and more complex deals for Revfinery's clients as a senior seller.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>5 or more years of B2B closing experience, including complex or enterprise deals</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$65 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Bench</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
+    <li><b>What you'll do:</b> own the client's largest opportunities from discovery through negotiation and close, working with several decision makers on each deal.</li>
+    <li><b>What you own:</b> your pipeline and forecast, and the sales approach for the accounts you work.</li>
+    <li><b>How you're measured:</b> on the KPIs and revenue targets agreed with the client at kickoff.</li>
+    <li><b>Support:</b> direct access to Revfinery's leadership on deal strategy, plus full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> senior sellers with a long closing record who want flexible, high-level work.</li>
+   </ul></details>
+   <p class="pick">Choose your hours to apply</p>
+   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Bench%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Bench%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Bench%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
+  </article>
+
+  <article class="role" data-group="rev" data-level="bench" data-type="lead" data-commit="low" data-min="7" data-s="open" style="--bar:#f25025">
+   <div class="top"><div><h2>Sales Leader, Bench level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Lead strategy and coaching for a client's Revfinery sales team for a few hours each week.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>7 or more years in B2B sales, including leading or coaching a team</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Flexible, with a weekly team review and a client check-in during business hours</dd></div><div><dt>Pay</dt><dd>$100 an hour</dd></div><div><dt>Level</dt><dd>Bench</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs a sales leader, we contact you first.</li>
+    <li><b>What you'll do:</b> coach the BDR and account executive on live deals, review their calls and set the plan for each week.</li>
+    <li><b>What you own:</b> the KPIs and revenue targets agreed with the client, the forecast, and the decision on when to change training, target customers, tools or the sales approach.</li>
+    <li><b>Who you'll work with:</b> a Revfinery project manager who handles reporting and day-to-day coordination.</li>
+    <li><b>Who it suits:</b> experienced sales leaders who want part-time leadership work alongside their other commitments.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Sales%20Leader%2C%20Bench%20level%2C%207-10%20hours%2C%20Revfinery">I'm interested</a>
+  </article>
+
+  <article class="role" data-group="rev" data-level="field" data-type="pm" data-commit="low part" data-min="10" data-s="open" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Project Manager, part-time</h2><p class="client">Revfinery, internal role</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+   <p class="sum">Keep Revfinery's client projects, consultants and Cohort sellers on track.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>2 or more years coordinating projects or teams. Sales or consulting exposure is a plus.</dd></div><div><dt>Hours required</dt><dd>About 10 to 15 a week</dd></div><div><dt>When you're needed</dt><dd>Flexible, with a few set check-ins during business hours each week</dd></div><div><dt>Pay</dt><dd>Hourly, shared at interview</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients.</li>
+    <li><b>What you'll do:</b> keep client projects on schedule, track deliverables and deadlines, and make sure nothing slips between Revfinery, its consultants and its clients.</li>
+    <li><b>Who you'll manage:</b> the consultants working on client engagements and the Cohort sellers. You'll track their weekly KPIs, hours and pipeline updates, and follow up when something is behind.</li>
+    <li><b>What you own:</b> the project board, the weekly status report and the check-in schedule.</li>
+    <li><b>Support:</b> you report directly to Revfinery's founder.</li>
+    <li><b>Who it suits:</b> an organized communicator who is comfortable holding people to deadlines.</li>
+   </ul></details>
+   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Project%20Manager%2C%20part-time%2C%20Revfinery">I'm interested</a>
+  </article>
+
+  <p class="note">Roles marked "Opening soon" start once the client engagement begins, and pay shown for those roles is an expected range confirmed at offer. Revfinery roles placed on client sales teams are always open, your start date depends on when a client team needs your level and hours, and pay is confirmed at offer. Apply now and we'll contact you first.</p>
+ </div>
 </main>
 
 <script>
 (function(){
-  var PAYKEY={bdr:{cohort:'pBC',field:'pBF'},ae:{cohort:'pAC',field:'pAF',bench:'pAB'},leader:{bench:'tLdPay'}};
-  var OVER={cohort:25,field:15,bench:10};
-  var MARGIN={bdr:50,ae:40,leader:45};
-  var PMBASE={10:350,25:675,40:1075};
-  var LEVEL={cohort:'Cohort',field:'Field',bench:'Bench'};
-  var ROLE={bdr:'Business development rep (BDR)',ae:'Account executive (AE)',leader:'Sales leader'};
-  var SIZE={10:'Starter',25:'Growth',40:'Full'},SIZEHRS={10:'7 to 10',25:'20 to 25',40:'35 to 40'};
-  /* 2026 new-employer state unemployment rate (%) and taxable wage base. A third value of 1 marks an estimate. */
-  var SUI={AL:['Alabama',2.7,8000],AK:['Alaska',1,54200],AZ:['Arizona',2,8000],AR:['Arkansas',2,7000],CA:['California',3.4,7000],CO:['Colorado',3.05,30600],CT:['Connecticut',1.9,27000],DE:['Delaware',1,14500],DC:['District of Columbia',2.7,9000,1],FL:['Florida',2.7,7000],GA:['Georgia',2.7,9500],HI:['Hawaii',2.4,64500],ID:['Idaho',1,58300],IL:['Illinois',3.35,14250],IN:['Indiana',2.5,9500],IA:['Iowa',1,20400],KS:['Kansas',1.75,15100],KY:['Kentucky',2.7,12000],LA:['Louisiana',2.7,7000,1],ME:['Maine',2.54,12000],MD:['Maryland',2.6,8500],MA:['Massachusetts',2.42,15000],MI:['Michigan',2.7,9000],MN:['Minnesota',2.7,44000,1],MS:['Mississippi',1,14000],MO:['Missouri',2.376,9000],MT:['Montana',1.5,47300,1],NE:['Nebraska',1.25,9000,1],NV:['Nevada',2.95,43700],NH:['New Hampshire',1.7,14000],NJ:['New Jersey',2.8,44800],NM:['New Mexico',1.1,30600,1],NY:['New York',4.1,17600],NC:['North Carolina',1,34200],ND:['North Dakota',1,46600],OH:['Ohio',2.85,9000],OK:['Oklahoma',1.5,25000],OR:['Oregon',2.4,56700],PA:['Pennsylvania',3.822,10000],RI:['Rhode Island',1.21,30800],SC:['South Carolina',1.06,14000],SD:['South Dakota',1.2,15000],TN:['Tennessee',2.7,9000],TX:['Texas',2.7,9000],UT:['Utah',1.2,50700],VT:['Vermont',1,15400],VA:['Virginia',2.5,8000],WA:['Washington',2.7,78200,1],WV:['West Virginia',2.7,9500],WI:['Wisconsin',3.05,14000],WY:['Wyoming',1.69,33800]};
-  /* settings are remembered between visits; the quote itself always starts empty */
-  var SETTINGS={pBC:20,pBF:25,pAC:28,pAF:35,pAB:65,tLdPay:100,tLdSalary:145000,tBonus:50,bonus:50,
-    bk10:2,bk25:5,bk40:8,ak10:5,ak25:12,ak40:20,
-    reserve:10,tMargin:40,benefits:15,st:'GA',suiRate:2.7,suiBase:9500,
-    avgDeal:40000,closeRate:15,commRate:10,aeSplit:50,pmPay:5400,
-    sBC:40000,oBC:50000,sBF:60000,oBF:85000,sAC:75000,oAC:140000,sAF:90000,oAF:175000,sAB:120000,oAB:300000,sLB:145000,oLB:350000,ihTb:25,ihTools:400,ihHire:10000,ihMgr:750};
-  var QUOTE={mode:'team',client:'',months:'',termUnit:'months',emp:'',
-    role:'bdr',level:'cohort',hours:'',meetings:'',overhead:25,margin:50,quote:'',
-    inBdr:true,inAe:true,inLd:false,inPm:true,pmAutoOff:false,
-    tBdrLevel:'field',tBdrN:'',bBlend:false,nBC:'',nBF:'',tBdrHours:'',
-    tAeLevel:'field',tAeN:'',aBlend:false,nAC:'',nAF:'',nAB:'',tAeHours:'',
-    ldMode:'hourly',tLdHours:10,pmMode:'account',pmPer:675,pmCap:8,tQuote:'',teams:1,target:''};
-  var KEY='revfinery-quote-settings-v1';
-  var S=load();
-  var inputs=Array.prototype.slice.call(document.querySelectorAll('input[id]'));
-  var P=null;
-
-  function load(){
-    var s=Object.assign({},SETTINGS,QUOTE);
-    try{var v=JSON.parse(localStorage.getItem(KEY));if(v&&typeof v==='object')Object.keys(SETTINGS).forEach(function(k){if(k in v)s[k]=v[k];});}catch(e){}
-    return s;
-  }
-  function save(){try{var o={};Object.keys(SETTINGS).forEach(function(k){o[k]=S[k];});localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}}
-  function $(id){return document.getElementById(id);}
-  function num(v){var n=parseFloat(String(v).replace(/[^0-9.]/g,''));return isFinite(n)?n:0;}
-  function money(n){return (n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-US');}
-  function pct(n){return (Math.round(n*10)/10)+'%';}
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function each(sel,fn){Array.prototype.forEach.call(document.querySelectorAll(sel),fn);}
-  function press(sel,attr,val){each(sel,function(b){b.setAttribute('aria-pressed',String(b.dataset[attr]===val));});}
-  function plural(n,w){return n+' '+w+(n===1?'':'s');}
-  function cnt(k){return Math.max(Math.round(num(S[k])),0);}
-  function tierOfHours(v){return !v?null:(v<=10?10:(v<=25?25:40));}
-  function teamTier(){
-    var hs=[];if(S.inBdr)hs.push(num(S.tBdrHours));if(S.inAe)hs.push(num(S.tAeHours));
-    return tierOfHours(hs.length?Math.max.apply(null,hs):0);
-  }
-  /* some fields edit a value that depends on the level or team size picked */
-  function keyFor(id){
-    if(id==='pay')return PAYKEY[S.role][S.level]||null;
-    if(id==='tBdrPay')return PAYKEY.bdr[S.tBdrLevel]||null;
-    if(id==='tAePay')return PAYKEY.ae[S.tAeLevel]||null;
-    if(id==='bdrCap'||id==='aeCap'){var t=teamTier();return t?(id==='bdrCap'?'bk':'ak')+t:null;}
-    return id;
-  }
-  function fill(){
-    inputs.forEach(function(el){
-      var k=keyFor(el.id);
-      if(!k){el.value='';el.disabled=true;return;}
-      el.disabled=false;
-      if(document.activeElement!==el)el.value=S[k];
-    });
-    $('st').value=S.st;
-  }
-  function marginNote(el,q,margin,target){
-    if(q>0){
-      if(margin<35){el.className='note bad';el.textContent='Margin is '+pct(margin)+', below your 35% floor. Raise the price or cut hours.';}
-      else if(margin<target){el.className='note mid';el.textContent='Margin is '+pct(margin)+', under your '+target+'% target but above the floor.';}
-      else{el.className='note good';el.textContent='Margin is '+pct(margin)+', at or above your target.';}
-    }else{el.className='note';el.textContent='';}
-  }
-
-  /* ---------- employer taxes and benefits ---------- */
-  function empType(hours){return S.emp||(hours>=35?'w2':'1099');}
-  function empCost(monthly,heads,hours,forceW2){
-    if(!heads||!monthly)return {tax:0,ben:0};
-    if(!forceW2&&empType(hours)!=='w2')return {tax:0,ben:0};
-    var annual=monthly*12/heads;
-    var t=0.062*Math.min(annual,184500)+0.0145*annual+0.006*Math.min(annual,7000)+num(S.suiRate)/100*Math.min(annual,num(S.suiBase));
-    var b=(hours>=35||forceW2)?annual*num(S.benefits)/100:0;
-    return {tax:t*heads/12,ben:b*heads/12};
-  }
-
-  /* ---------- team helpers ---------- */
-  var BL=[['cohort','nBC'],['field','nBF']],AL=[['cohort','nAC'],['field','nAF'],['bench','nAB']];
-  function groups(role){
-    var blend=role==='bdr'?S.bBlend:S.aBlend,L=role==='bdr'?BL:AL;
-    if(blend)return L.map(function(l){return [l[0],cnt(l[1])];}).filter(function(g){return g[1]>0;});
-    var n=cnt(role==='bdr'?'tBdrN':'tAeN');
-    return n>0?[[role==='bdr'?S.tBdrLevel:S.tAeLevel,n]]:[];
-  }
-  function total(role){return groups(role).reduce(function(a,g){return a+g[1];},0);}
-  function repCount(){return (S.inBdr?total('bdr'):0)+(S.inAe?total('ae'):0);}
-  /* manager pay for the team; a sales leader halves it, or replaces the manager on a Starter team */
-  function setPm(h){
-    var base=Math.max(350,Math.round(PMBASE[h]*Math.max(repCount(),2)/2/25)*25);
-    if(S.inLd&&h<=10){if(S.inPm){S.inPm=false;S.pmAutoOff=true;}}
-    else{
-      if(S.pmAutoOff){S.inPm=true;S.pmAutoOff=false;}
-      if(S.inLd)base=Math.round(base/2/25)*25;
-    }
-    S.pmPer=base;S.pmCap=Math.max(1,Math.round(num(S.pmPay)/base));
-  }
-  function setSize(h){
-    if(repCount()===0&&!S.inLd){S.bBlend=false;S.aBlend=false;S.tBdrN=1;S.tAeN=1;}
-    S.tBdrHours=h;S.tAeHours=h;setPm(h);S.tQuote='';
-  }
-  /* ---------- recommendation from the revenue target ---------- */
-  function recommend(){
-    var T=num(S.target),D=num(S.avgDeal),r=num(S.closeRate)/100;
-    if(!(T>0&&D>0&&r>0))return null;
-    var deals=T/D,mm=deals/r/12,h=40;
-    if(mm<=num(S.bk10)+0.5)h=10;else if(mm<=num(S.bk25)+0.5)h=25;
-    return {deals:deals,meetings:mm,h:h,cap:num(S.bk40),short:mm>num(S.bk40)+0.5};
-  }
-  function applyRec(){var r=recommend();if(r)setSize(r.h);}
-  function useRecommended(){
-    S.inBdr=true;S.inAe=true;S.inPm=true;S.inLd=false;S.pmAutoOff=false;
-    S.bBlend=false;S.aBlend=false;S.tBdrLevel='field';S.tAeLevel='field';S.tBdrN=1;S.tAeN=1;
-    var r=recommend();if(r)setSize(r.h);
-  }
-
-  /* ---------- in-house estimate ---------- */
-  var IHKEY={bdr:{cohort:'BC',field:'BF'},ae:{cohort:'AC',field:'AF',bench:'AB'},leader:{bench:'LB'}};
-  var IHFALL={bdr:'BC',ae:'AF',leader:'LB'};
-  function inhouse(lines,hasMgr){
-    var sal=0,inc=0,heads=0,repHeads=0;
-    lines.forEach(function(l){
-      var k=(IHKEY[l.role]&&IHKEY[l.role][l.level])||IHFALL[l.role];
-      var base=num(S['s'+k]),ote=Math.max(num(S['o'+k]),base),fte=l.n;
-      sal+=fte*base/12;inc+=fte*(ote-base)/12;heads+=l.n;if(l.role!=='leader')repHeads+=l.n;
-    });
-    var tax=sal*num(S.ihTb)/100,tools=heads*num(S.ihTools),hire=heads*num(S.ihHire)/12,mgr=hasMgr?repHeads*num(S.ihMgr):0;
-    return {sal:sal,inc:inc,tax:tax,tools:tools,hire:hire,mgr:mgr,total:sal+inc+tax+tools+hire+mgr};
-  }
-
-  /* ---------- single seat ---------- */
-  function single(){
-    var h=num(S.hours),hoursMo=h*4.33,pay=num(S[PAYKEY[S.role][S.level]]);
-    var rep=hoursMo*pay+(S.role==='bdr'?num(S.bonus)*num(S.meetings):0);
-    var E=empCost(rep,1,h),over=rep*num(S.overhead)/100;
-    var loaded=rep+E.tax+E.ben+over,valid=rep>0;
-    var m=Math.min(num(S.margin),95)/100,exact=loaded/(1-m),q=num(S.quote);
-    var price=!valid?0:(q>0?q:Math.ceil(exact/250)*250);
-    var profit=price-loaded,margin=price>0?profit/price*100:0;
-    $('oHours').textContent=Math.round(hoursMo);$('oRep').textContent=money(rep);$('oTax').textContent=money(E.tax+E.ben);
-    $('oOver').textContent=money(over);$('oExact').textContent=money(valid?exact:0);
-    $('oRate').textContent=hoursMo>0&&valid?money(price/hoursMo)+'/hr':'$0';
-    marginNote($('quoteNote'),valid?q:0,margin,num(S.margin));
-    press('#roles button','role',S.role);
-    each('#levels button',function(b){b.hidden=!(b.dataset.level in PAYKEY[S.role]);});
-    press('#levels button','level',S.level);
-    each('#tiers button',function(b){b.setAttribute('aria-pressed',String(num(b.dataset.h)===h));});
-    var t=tierOfHours(h);
-    var cm=S.role==='ae'&&t?num(S['ak'+t])*(num(S.closeRate)/100)*num(S.avgDeal)*num(S.commRate)/100:0;
-    return {valid:valid,price:price,loaded:valid?loaded:0,profit:valid?profit:0,margin:margin,tax:E.tax,ben:E.ben,hours:h,
-      lines:valid?[{role:S.role,level:S.level,n:1,hours:h,w:1}]:[],hasPm:true,pmIncluded:true,comm:S.role==='ae',commMo:cm,
-      base:valid?rep+E.tax+E.ben+over:0,pmFixed:false,cap:1};
-  }
-
-  /* ---------- team ---------- */
-  function team(){
-    var bh=num(S.tBdrHours),ah=num(S.tAeHours),rs=num(S.reserve)/100,tier=teamTier();
-    var book=tier?num(S['bk'+tier]):0;
-    var lines=[],bdr=0,ae=0,bn=0,an=0,tax=0,ben=0;
-    function add(role,level,n,hours,c,E){tax+=E.tax;ben+=E.ben;lines.push({role:role,level:level,n:n,hours:hours,w:c*(1+rs)+E.tax+E.ben});}
-    if(S.inBdr&&bh>0)groups('bdr').forEach(function(g){var c=g[1]*(bh*4.33*num(S[PAYKEY.bdr[g[0]]])+num(S.tBonus)*book);bdr+=c;bn+=g[1];add('bdr',g[0],g[1],bh,c,empCost(c,g[1],bh));});
-    if(S.inAe&&ah>0)groups('ae').forEach(function(g){var c=g[1]*ah*4.33*num(S[PAYKEY.ae[g[0]]]);ae+=c;an+=g[1];add('ae',g[0],g[1],ah,c,empCost(c,g[1],ah));});
-    var salaried=S.ldMode==='salary',lh=num(S.tLdHours);
-    var ld=S.inLd?(salaried?num(S.tLdSalary)/12:lh*4.33*num(S.tLdPay)):0;
-    if(S.inLd&&ld>0)add('leader','bench',1,lh,ld,empCost(ld,1,lh,salaried));
-    var valid=bdr+ae+ld>0;
-    var cap=Math.max(num(S.pmCap),1),fixed=S.pmMode==='fixed';
-    var pm=!S.inPm||!valid?0:(fixed?num(S.pmPay)/cap:num(S.pmPer));
-    var res=(bdr+ae+ld)*rs,tTax=tax+ben;
-    var loaded=bdr+ae+ld+pm+res+tTax;
-    var m=Math.min(num(S.tMargin),95)/100,exact=loaded/(1-m),q=num(S.tQuote);
-    var price=!valid?0:(q>0?q:Math.ceil(exact/250)*250);
-    var profit=price-loaded,margin=price>0?profit/price*100:0;
-    $('tBdr').textContent=money(bdr);$('tAe').textContent=money(ae);$('tLd').textContent=money(ld);$('tPm').textContent=money(pm);
-    $('tTax').textContent=money(tTax);$('tRes').textContent=money(res);$('tExact').textContent=money(valid?exact:0);
-    marginNote($('tQuoteNote'),valid?q:0,margin,num(S.tMargin));
-
-    $('secBdr').hidden=!S.inBdr;$('secAe').hidden=!S.inAe;$('secLd').hidden=false;$('ldOn').hidden=!S.inLd;$('ldOff').hidden=!!S.inLd;$('secPm').hidden=!S.inPm;$('secComm').hidden=!S.inAe;
-    each('#parts button',function(x){x.setAttribute('aria-pressed',String(!!S[x.dataset.part]));});
-    var pn=$('partsNote');
-    if(!S.inBdr&&!S.inAe&&!S.inLd){pn.className='note bad';pn.textContent='Pick at least one role to get a quote.';}
-    else if(!S.inPm&&!S.inLd){pn.className='note mid';pn.textContent='With no project manager or sales leader, nobody at Revfinery is managing these reps.';}
-    else if(S.inLd&&S.inPm){pn.className='note';pn.textContent='A sales leader is on this team, so manager pay is halved and the manager covers reporting and admin only.';}
-    else if(S.inLd&&S.pmAutoOff){pn.className='note';pn.textContent='On a Starter team the sales leader covers management, so the project manager is switched off.';}
-    else{pn.className='note';pn.textContent='';}
-
-    $('pmNote').textContent=fixed?'Each team carries '+money(pm)+' of the manager\'s pay. That only holds once all '+Math.round(cap)+' teams are sold.':'The manager is paid '+money(pm)+' a month for this team, so your margin holds from the first team sold.';
-    $('fPer').hidden=fixed;$('fPay').hidden=!fixed;
-    press('#pmModes button','pmMode',S.pmMode);
-    $('fLdPay').hidden=salaried;$('fLdSal').hidden=!salaried;press('#ldModes button','ld',S.ldMode);
-    $('ldNote').textContent=salaried&&S.inLd?'A salaried leader costs '+money(ld)+' a month before employer taxes and benefits, which are added as a W-2 employee.':'';
-
-    /* level chips and the blended option */
-    [['b','bBlend','tBdrLevel','bOne','bMix'],['a','aBlend','tAeLevel','aOne','aMix']].forEach(function(c){
-      each('.lv[data-for="'+c[0]+'"] button',function(x){
-        x.setAttribute('aria-pressed',String(x.dataset.blend?!!S[c[1]]:(!S[c[1]]&&x.dataset.level===S[c[2]])));
-      });
-      $(c[3]).hidden=!!S[c[1]];$(c[4]).hidden=!S[c[1]];
-    });
-
-    each('#teamTiers button',function(b){b.setAttribute('aria-pressed',String(num(b.dataset.h)===bh&&num(b.dataset.h)===ah));});
-    $('bkTitle').textContent=tier?'Booking assumptions at '+SIZEHRS[tier]+' hours a week':'Booking assumptions';
-    $('bkNote').textContent=tier?'These are what one BDR and one AE handle each month at this team size. Each size keeps its own numbers.':'Choose a team size to set these.';
-
-    var total=num(S.avgDeal)*num(S.commRate)/100,aeCut=total*num(S.aeSplit)/100;
-    $('cTotal').textContent=money(total);$('cAe').textContent=money(aeCut);$('cKeep').textContent=money(total-aeCut);
-
-    var rec=recommend(),gn=$('goalNote');
-    if(rec){
-      gn.className=rec.short?'note mid':'note good';
-      gn.textContent='That takes about '+plural(Math.round(rec.deals),'deal')+' a year and '+plural(Math.round(rec.meetings),'meeting')+' a month, which fits the '+SIZE[rec.h]+' size. '+(rec.short?'One BDR books about '+Math.round(rec.cap)+' meetings a month at the Full size, so this goal is beyond one team at these numbers. Check the deal size and close rate with the client before sending.':'Allow 60 to 90 days for reps to reach this pace.');
-    }else{gn.className='note';gn.textContent='';}
-    $('useRec').hidden=!rec;
-
-    var hasAe=an>0,annual=0;
-    if(hasAe){
-      if(num(S.target)>0&&!(rec&&rec.short))annual=num(S.target);
-      else if(bn>0)annual=bn*book*12*(num(S.closeRate)/100)*num(S.avgDeal);
-      else annual=an*(tier?num(S['ak'+tier]):0)*12*(num(S.closeRate)/100)*num(S.avgDeal);
-    }
-    return {valid:valid,price:price,loaded:valid?loaded:0,profit:valid?profit:0,margin:margin,tax:tax,ben:ben,hours:tier||0,
-      lines:valid?lines:[],hasPm:!!S.inPm,pmIncluded:!!S.inPm&&valid,comm:hasAe,commMo:annual*num(S.commRate)/100/12,rec:rec,
-      base:bdr+ae+ld+res+tTax,pmFixed:fixed,cap:cap};
-  }
-
-  /* ---------- proposal ---------- */
-  var INCLUDED=['Trained reps matched to your market and offer','A project manager and a weekly metrics report','A live view of your team\'s KPIs in ClickUp, open to you at any time','Outreach cadences and talk tracks written for your offer','Pipeline tracking in your CRM','Ongoing call review and coaching','Full access to the Revfinery AI sales trainer for the length of your engagement','Rep replacement within 15 to 30 days'];
-  var REASONS=[
-    ['A faster start','Hiring a rep usually takes two to three months before the first call is made. An outsourced team can be prospecting within a few weeks.'],
-    ['Lower hiring risk','If a rep is not the right fit, we replace them within 15 to 30 days, and you carry no severance or rehiring cost.'],
-    ['One predictable monthly cost','Salary, payroll taxes, benefits, tools and management are rolled into a single fee, so the true cost is clear from the start.'],
-    ['Management and coaching are included','Every rep is managed, coached and measured each week, so your leadership team does not have to become sales managers.'],
-    ['A proven process from day one','Your team runs on tested outreach cadences, talk tracks and pipeline reporting, with nothing to build from scratch.'],
-    ['Room to scale up or down','You can add or reduce seats as results come in, without the long-term commitment of full-time headcount.'],
-    ['A way to test a market first','Outsourcing lets you prove that a new market or product has demand before you invest in a permanent team.']
-  ];
-  var LOGO='data:image/png;base64,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';
-  var STATS=[['$75M+','in closed B2B deals across industries'],['15+ years','of hands-on B2B sales'],['100,000+','cold calls made']];
-  function teamSummary(lines,pm){
-    var b=0,a=0,ldr=false,parts=[];
-    lines.forEach(function(l){if(l.role==='bdr')b+=l.n;else if(l.role==='ae')a+=l.n;else ldr=true;});
-    if(b)parts.push(plural(b,'BDR'));
-    if(a)parts.push(plural(a,'AE'));
-    if(ldr)parts.push('a sales leader');
-    if(pm)parts.push('a project manager');
-    if(!parts.length)return '';
-    if(parts.length===1)return parts[0];
-    return parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1];
-  }
-  function tierName(h){return h<=10?'Starter':(h<=25?'Growth':'Full');}
-  var TIERHRS={Starter:'7 to 10',Growth:'20 to 25',Full:'35 to 40'};
-  function rangeFor(h){return h===10?'7-10':(h===25?'20-25':(h===40?'35-40':String(h)));}
-  function tierOf(lines,isTeam){
-    var reps=lines.filter(function(l){return l.role!=='leader';});
-    if(!reps.length)reps=lines;
-    if(!reps.length)return null;
-    var hs=reps.map(function(l){return l.hours;}),lo=tierName(Math.min.apply(null,hs)),hi=tierName(Math.max.apply(null,hs));
-    var unit=isTeam?' team':' seat';
-    if(lo!==hi)return {label:'Custom'+unit,hours:'Hours vary by role'};
-    return {label:hi+unit,hours:TIERHRS[hi]+' hours a week'+(isTeam?' per rep':'')};
-  }
-  function buildProposal(Q,IH){
-    var tier=tierOf(Q.lines,S.mode==='team'),custom=!!tier&&/^Custom/.test(tier.label);
-    var totalW=Q.lines.reduce(function(a,l){return a+(l.w||0);},0)||1,used=0;
-    var per=Q.lines.map(function(l){var v=Math.round(Q.price*(l.w||0)/totalW/l.n);used+=v*l.n;return v;});
-    var fixAt=-1;Q.lines.forEach(function(l,i){if(l.n===1)fixAt=i;});
-    if(fixAt>-1)per[fixAt]+=Math.round(Q.price)-used;
-    var rows=Q.lines.map(function(l,i){
-      var sub=LEVEL[l.level]?LEVEL[l.level]+' level':'';
-      if(custom||l.role==='leader')sub+=(sub?', ':'')+rangeFor(l.hours)+' hrs/week';
-      return {name:ROLE[l.role],sub:sub,right:l.n>1?l.n+' reps at '+money(per[i])+' each':money(per[i])};
-    });
-    var hasLdr=Q.lines.some(function(l){return l.role==='leader';});
-    if(Q.pmIncluded)rows.push({name:'Project manager',sub:hasLdr?'Handles reporting and day-to-day coordination':'Manages the team and reports weekly',right:'Included'});
-    var goal=null;
-    if(S.mode==='team'&&Q.rec)goal={target:num(S.target),deals:Math.round(Q.rec.deals),meetings:Math.round(Q.rec.meetings)};
-    var d=new Date(),cm=Q.comm?Q.commMo:0,savings=IH.total-(Q.price+cm);
-    var fullTime=Q.lines.some(function(l){return l.hours>=35;});
-    return {client:String(S.client||'').trim(),date:d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),
-      months:Math.max(0,Math.round(num(S.months))),unit:S.termUnit==='years'?'year':'month',hasPm:!!Q.pmIncluded,hasLd:Q.lines.some(function(l){return l.role==='leader';}),goal:goal,rows:rows,tier:tier,summary:teamSummary(Q.lines,Q.pmIncluded),price:Q.price,comm:Q.comm?num(S.commRate):0,commMo:cm,total:Q.price+cm,
-      ih:[['Base salaries',IH.sal],['Incentive pay at target',IH.inc],['Payroll taxes and benefits',IH.tax],['Sales tools and data',IH.tools],['Hiring and training, spread over 12 months',IH.hire],['Management time',IH.mgr]].filter(function(r){return r[1]>0;}),
-      ihTotal:IH.total,savings:savings,fullTime:fullTime,showCompare:savings>0&&Q.lines.length>0};
-  }
-  function billText(p){return 'Billed monthly in advance'+(p.months>0?' over a '+p.months+'-'+p.unit+' term.':'.');}
-  function expectText(p){
-    var who='Your project manager and/or sales leader track';
-    return ['Sales results rarely move in a straight line. Some months will be slower than planned and some reps will far outperform the plan, and new reps usually take 60 to 90 days to reach full pace. The figures in this proposal are targets and estimates, and they are not guarantees.',
-      who+' the KPIs and revenue targets we agree on with you at kickoff. When the data supports a change, we work with you to adjust training, your ideal customer profile, tools or the sales motion.'];
-  }
-  function includedList(p){
-    var first=p.hasPm?'A project manager and a weekly metrics report':(p.hasLd?'A sales leader who manages the team, and a weekly metrics report':'A weekly metrics report');
-    return INCLUDED.map(function(i,ix){return ix===1?first:i;});
-  }
-  function commText(p){return p.comm?' Commission of '+p.comm+'% of year-one contract value applies to deals your Revfinery AE closes'+(p.commMo>0?', estimated at '+money(p.commMo)+' a month at target.':'.'):'';}
-  var DISCLAIMER='In-house figures assume one full-time hire for each role, which is how these roles are typically staffed, and are estimates based on typical US salaries, incentive pay, payroll taxes, benefits, tools, and hiring and training costs. Your Revfinery team works the hours shown above. Your actual costs may differ.';
-  function renderPreview(p){
-    var who=esc(p.client||'your company');
-    var h='<div class="ph"><img class="logo" src="'+LOGO+'" alt="Revfinery"><span class="kind">Outsourced sales proposal</span><b>Prepared for '+who+'</b><small>'+esc(p.date)+'</small></div>';
-    if(p.goal)h+='<h3>Your goal</h3><p>You want to add '+money(p.goal.target)+' in new revenue over the next 12 months. Reaching that takes about '+p.goal.deals+' new customers and roughly '+p.goal.meetings+' qualified meetings a month.</p>';
-    h+='<h3>Your Revfinery team</h3>'+(p.tier?'<div class="tier"><b>'+esc(p.tier.label)+'</b>'+esc(p.tier.hours)+'</div>':'')+(p.summary?'<p>We recommend '+esc(p.summary)+', working as one managed team.</p>':'')+'<table>';
-    p.rows.forEach(function(r){h+='<tr><td>'+esc(r.name)+(r.sub?'<br><small>'+esc(r.sub)+'</small>':'')+'</td><td>'+esc(r.right)+'</td></tr>';});
-    h+='</table><p><small>Amounts are per person, per month.</small></p><div class="invest"><span>Your investment</span><div class="big">'+money(p.price)+' <small>per month'+(p.months>0?' for '+plural(p.months,p.unit):'')+'</small></div><small>'+esc(billText(p)+commText(p))+'</small></div>';
-    h+='<h3>What is included</h3><ul>';includedList(p).forEach(function(i){h+='<li>'+esc(i)+'</li>';});h+='</ul>';
-    if(p.showCompare){
-      h+='<h3>What it costs to hire these roles in-house</h3><table>';
-      p.ih.forEach(function(r){h+='<tr><td>'+esc(r[0])+'</td><td>'+money(r[1])+'</td></tr>';});
-      h+='<tr class="t"><td>Estimated in-house cost per month</td><td>'+money(p.ihTotal)+'</td></tr>';
-      if(p.comm)h+='<tr><td>Revfinery monthly fee</td><td>'+money(p.price)+'</td></tr><tr><td>Estimated commission at target</td><td>'+money(p.commMo)+'</td></tr>';
-      h+='<tr class="t"><td>Revfinery per month</td><td>'+money(p.total)+'</td></tr>';
-      h+='<tr class="t save"><td>You save each month with Revfinery</td><td>'+money(p.savings)+'</td></tr>';
-      h+='</table><p><small>'+DISCLAIMER+'</small></p>';
-    }
-    h+='<h3>What to expect</h3>';expectText(p).forEach(function(t){h+='<p>'+esc(t)+'</p>';});
-    h+='<h3>Why companies outsource sales</h3>';
-    REASONS.forEach(function(r){h+='<p><strong>'+esc(r[0])+'.</strong> '+esc(r[1])+'</p>';});
-    h+='<h3>Who you are working with</h3><p>Revfinery is run by sellers and operators who have done the job themselves.</p><div class="stats">';
-    STATS.forEach(function(s){h+='<div><b>'+esc(s[0])+'</b><small>'+esc(s[1])+'</small></div>';});
-    h+='</div>';
-    $('preview').innerHTML=h;
-  }
-  function pdfSafe(s){return String(s).replace(/[\u2013\u2014]/g,'-').replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[^\x20-\xFF]/g,'');}
-  function makePdf(p){
-    var J=window.jspdf&&window.jspdf.jsPDF;
-    if(!J)throw new Error('The PDF library did not load.');
-    var d=new J({unit:'pt',format:'letter'});
-    var W=612,H=792,M=54,CW=W-2*M,y=0,FOOT=56;
-    var TEAL=[12,107,115],INK=[14,42,45],ORANGE=[242,80,37],YELLOW=[255,209,102],AQUA=[234,246,247],PEACH=[255,247,232],MUTED=[92,112,114],LINE=[214,226,227],WHITE=[255,255,255];
-    function fill(c){d.setFillColor(c[0],c[1],c[2]);}
-    function ink(c){d.setTextColor(c[0],c[1],c[2]);}
-    function font(size,style){d.setFont('helvetica',style||'normal');d.setFontSize(size);}
-    function need(h){if(y+h>H-FOOT){d.addPage();y=M;}}
-    function wrap(str,size,style,width){font(size,style);return d.splitTextToSize(pdfSafe(str),width);}
-    function para(str,size,style,color,gap,x,width){
-      var lines=wrap(str,size,style,width||CW),lh=size*1.42;ink(color);
-      for(var i=0;i<lines.length;i++){need(lh);font(size,style);ink(color);d.text(lines[i],x||M,y+size);y+=lh;}
-      y+=gap||0;
-    }
-    function h2(str){y+=16;need(50);fill(ORANGE);d.rect(M,y+3,4,13,'F');font(14,'bold');ink(INK);d.text(pdfSafe(str),M+12,y+14);y+=26;}
-    function rule(){d.setDrawColor(LINE[0],LINE[1],LINE[2]);d.setLineWidth(0.6);d.line(M,y,W-M,y);}
-    function row(l,r,bold,sub,bg){
-      var h=sub?36:24;need(h);
-      if(bg){fill(bg);d.rect(M-6,y,CW+12,h,'F');}
-      font(11,bold?'bold':'normal');ink(INK);d.text(pdfSafe(l),M,y+15);d.text(pdfSafe(r),W-M,y+15,{align:'right'});
-      if(sub){font(9,'normal');ink(MUTED);d.text(pdfSafe(sub),M,y+28);}
-      y+=h;rule();
-    }
-    /* cover band */
-    fill([32,73,78]);d.rect(0,0,W,168,'F');
-    fill(ORANGE);d.rect(0,168,W,5,'F');
-    fill(YELLOW);d.rect(M,152,46,4,'F');
-    try{d.addImage(LOGO,'PNG',M,24,132,28.9);}catch(e){font(22,'bold');ink(WHITE);d.text('Revfinery',M,42);}
-    font(10,'normal');ink(AQUA);d.text('Outsourced sales proposal',W-M,35,{align:'right'});
-    var title=wrap('Prepared for '+(p.client||'your company'),22,'bold',CW);
-    font(22,'bold');ink(WHITE);d.text(title[0],M,104);
-    font(11,'normal');ink(AQUA);d.text(pdfSafe(p.date),M,126);
-    y=186;
-    if(p.goal){h2('Your goal');para('You want to add '+money(p.goal.target)+' in new revenue over the next 12 months. Reaching that takes about '+p.goal.deals+' new customers and roughly '+p.goal.meetings+' qualified meetings a month.',11,'normal',INK,0);}
-    h2('Your Revfinery team');
-    if(p.tier){
-      need(34);
-      font(10.5,'bold');var tw=d.getTextWidth(pdfSafe(p.tier.label));
-      font(10.5,'normal');var hw=d.getTextWidth(pdfSafe(p.tier.hours));
-      fill(YELLOW);d.roundedRect(M,y,tw+hw+34,24,12,12,'F');
-      font(10.5,'bold');ink(INK);d.text(pdfSafe(p.tier.label),M+12,y+16);
-      font(10.5,'normal');ink(INK);d.text(pdfSafe(p.tier.hours),M+22+tw,y+16);
-      y+=34;
-    }
-    if(p.summary)para('We recommend '+p.summary+', working as one managed team.',11,'normal',INK,6);
-    rule();
-    p.rows.forEach(function(r){row(r.name,r.right,false,r.sub);});
-    y+=6;para('Amounts are per person, per month.',9,'normal',MUTED,0);
-    /* investment card */
-    y+=18;
-    var note=wrap(billText(p)+commText(p),9.5,'normal',CW-40);
-    var cardH=74+note.length*13.5;
-    need(cardH+6);
-    fill(AQUA);d.roundedRect(M,y,CW,cardH,12,12,'F');
-    fill(TEAL);d.roundedRect(M,y,6,cardH,3,3,'F');
-    font(10,'bold');ink(TEAL);d.text('YOUR INVESTMENT',M+20,y+24);
-    font(26,'bold');ink(INK);var pt=money(p.price);d.text(pt,M+20,y+54);
-    var pw=d.getTextWidth(pt);font(11,'normal');ink(MUTED);d.text('per month'+(p.months>0?' for '+plural(p.months,p.unit):''),M+26+pw,y+54);
-    font(9.5,'normal');ink(MUTED);
-    for(var n=0;n<note.length;n++)d.text(note[n],M+20,y+74+n*13.5);
-    y+=cardH+4;
-    need(46+includedList(p).length*18);
-    h2('What is included');
-    includedList(p).forEach(function(i){
-      var lines=wrap(i,11,'normal',CW-18);need(lines.length*15.6);
-      fill(TEAL);d.circle(M+4,y+8,2.6,'F');
-      para(i,11,'normal',INK,2,M+18,CW-18);
-    });
-    if(p.showCompare){
-      need(42+(p.ih.length+(p.comm?5:3))*24+50);
-      h2('What it costs to hire these roles in-house');rule();
-      p.ih.forEach(function(r){row(r[0],money(r[1]),false);});
-      row('Estimated in-house cost per month',money(p.ihTotal),true);
-      if(p.comm){row('Revfinery monthly fee',money(p.price),false);row('Estimated commission at target',money(p.commMo),false);}
-      row('Revfinery per month',money(p.total),true);
-      row('You save each month with Revfinery',money(p.savings),true,null,PEACH);
-      y+=8;para(DISCLAIMER,9,'normal',MUTED,0);
-    }
-    h2('What to expect');
-    expectText(p).forEach(function(t){para(t,11,'normal',INK,7);});
-    need(110);
-    h2('Why companies outsource sales');
-    REASONS.forEach(function(r){
-      var body=wrap(r[1],11,'normal',CW);need(18+body.length*15.6);
-      para(r[0],11.5,'bold',TEAL,0);para(r[1],11,'normal',INK,7);
-    });
-    h2('Who you are working with');
-    para('Revfinery is run by sellers and operators who have done the job themselves.',11,'normal',INK,8);
-    need(70);
-    var gap=10,cw3=(CW-2*gap)/3;
-    STATS.forEach(function(s,i){
-      var x=M+i*(cw3+gap);
-      fill(AQUA);d.roundedRect(x,y,cw3,60,10,10,'F');
-      font(17,'bold');ink(TEAL);d.text(pdfSafe(s[0]),x+12,y+26);
-      font(8.5,'normal');ink(MUTED);var sl=d.splitTextToSize(pdfSafe(s[1]),cw3-22);
-      for(var k=0;k<sl.length&&k<2;k++)d.text(sl[k],x+12,y+41+k*10.5);
-    });
-    y+=66;
-    var pages=d.getNumberOfPages();
-    for(var i=1;i<=pages;i++){
-      d.setPage(i);
-      d.setDrawColor(LINE[0],LINE[1],LINE[2]);d.setLineWidth(0.6);d.line(M,H-40,W-M,H-40);
-      font(9,'bold');ink(TEAL);d.text('Revfinery',M,H-26);
-      font(9,'normal');ink(MUTED);d.text('We help you sell more  |  revfinery.com',M+50,H-26);
-      d.text('Page '+i+' of '+pages,W-M,H-26,{align:'right'});
-    }
-    return d;
-  }
-
-  /* ---------- main render ---------- */
-  function calc(){
-    var A=single(),B=team();
-    var Q=S.mode==='team'?B:A;
-    $('price').textContent=money(Q.price);$('rLoaded').textContent=money(Q.loaded);$('rProfit').textContent=money(Q.profit);$('rMargin').textContent=pct(Q.margin);
-    $('single').hidden=S.mode==='team';$('team').hidden=S.mode!=='team';
-    press('#modes button','mode',S.mode);
-    var nm=String(S.client||'').trim();
-    $('rLbl').textContent='Monthly price to quote'+(nm?' for '+nm:'');
-
-    /* employment */
-    var eff=empType(Q.hours);
-    press('#empModes button','emp',eff);
-    var en=$('empNote');
-    if(!S.emp){en.className='note';en.textContent='Not chosen yet, so full-time reps are costed as W-2 employees and part-time reps as 1099 contractors.';}
-    else if(S.emp==='1099'&&Q.hours>=35){en.className='note mid';en.textContent='Full-time reps on a 1099 carry a misclassification risk. Check this with your accountant.';}
-    else{en.className='note';en.textContent=S.emp==='w2'?'Every rep on this quote is costed as a W-2 employee.':'Every rep on this quote is costed as a 1099 contractor, with no employer taxes or benefits.';}
-    $('w2Fields').hidden=eff!=='w2'&&!(S.mode==='team'&&S.inLd&&S.ldMode==='salary');
-    $('eTax').textContent=money(Q.tax);$('eBen').textContent=money(Q.ben);
-    var sd=SUI[S.st];
-    $('stNote').textContent=(sd&&sd[3]?sd[0]+' sets this rate by industry, so replace the estimate with your assigned rate. ':'')+'Employer taxes are Social Security, Medicare, federal unemployment and state unemployment at the 2026 new-employer rate. Your assigned state rate may differ.';
-
-    /* contract length */
-    var cmo=Q.comm&&Q.valid?Q.commMo:0;
-    var yrs=S.termUnit==='years',mo=Math.max(0,Math.round(num(S.months)))*(yrs?12:1),keep=cmo*(1-Math.min(num(S.aeSplit),100)/100);
-    $('termLbl').textContent=yrs?'Number of years':'Number of months';press('#termUnits button','unit',yrs?'years':'months');
-    $('mMonthly').textContent=money(Q.price);$('mFee').textContent=money(Q.price*mo);$('mComm').textContent=money(cmo*mo);
-    $('mTotal').textContent=money((Q.price+cmo)*mo);$('mCost').textContent=money(Q.loaded*mo);$('mProfit').textContent=money((Q.profit+keep)*mo);
-    $('mNote').textContent=cmo>0?'Profit includes your share of commission after the AE\'s '+num(S.aeSplit)+'% split. The proposal shows the monthly investment and the term, with no totals.':'The proposal shows the monthly investment and the term, with no totals.';
-
-    /* in-house comparison */
-    var IH=inhouse(Q.lines,Q.hasPm);
-    $('ihSal').textContent=money(IH.sal);$('ihInc').textContent=money(IH.inc);$('ihTax').textContent=money(IH.tax);$('ihToolsO').textContent=money(IH.tools);
-    $('ihHireO').textContent=money(IH.hire);$('ihMgrO').textContent=money(IH.mgr);$('ihTotal').textContent=money(IH.total);
-    $('rvFee').textContent=money(Q.price);$('rvComm').textContent=money(cmo);$('rvTotal').textContent=money(Q.price+cmo);
-    var diff=IH.total-(Q.price+cmo),ihn=$('ihNote');
-    if(!Q.valid){ihn.className='note';ihn.textContent='';}
-    else if(diff>=0){ihn.className='note good';ihn.textContent='Your total is '+money(diff)+' a month under the in-house estimate, and the proposal shows that as savings.';}
-    else{ihn.className='note mid';ihn.textContent='In-house looks '+money(-diff)+' a month cheaper, so the comparison is left off the proposal.';}
-
-    /* proposal */
-    if(Q.valid){
-      Q.commMo=cmo;P=buildProposal(Q,IH);renderPreview(P);
-      $('cmpTag').textContent=P.showCompare?'shown on proposal':'not on proposal';
-    }else{
-      P=null;$('cmpTag').textContent='not on proposal';
-      $('preview').innerHTML='<p style="margin:0;color:var(--muted)">'+(S.mode==='team'?'Choose a team size and add at least one role to see the proposal.':'Choose the hours per week to see the proposal.')+'</p>';
-    }
-
-    /* planning view */
-    var n=Math.max(0,Math.round(num(S.teams)));
-    var pmOn=S.mode==='team'&&S.inPm&&Q.valid;
-    var mgrs=n>0&&pmOn?Math.ceil(n/Q.cap):0;
-    var before=n*(Q.price-Q.base);
-    var mgrCost=!pmOn?0:(Q.pmFixed?mgrs*num(S.pmPay):n*num(S.pmPer));
-    var real=Q.valid?before-mgrCost:0;
-    $('tRev').textContent=money(Q.price*n);$('tPmTotal').textContent=mgrs;$('tProf').textContent=money(real);
-    $('tReal').textContent=n>0&&Q.price>0?pct(real/(Q.price*n)*100):'0%';
-    var gap=mgrs*Q.cap-n,tn='';
-    if(pmOn&&n>0&&Q.pmFixed&&gap>0)tn='You are paying for '+gap+' unsold manager slot'+(gap>1?'s':'')+', which is why the margin is under the target.';
-    if(pmOn&&n>0&&!Q.pmFixed){var alt=before-Math.ceil(n/Q.cap)*num(S.pmPay);tn='The manager earns '+money(mgrCost)+' a month from these teams. On fixed pay of '+money(num(S.pmPay))+' your margin would be '+pct(alt/(Q.price*n)*100)+'.';}
-    $('teamsNote').textContent=tn;
-    save();
-  }
-
-  /* ---------- events ---------- */
-  var REC_KEYS=['target','avgDeal','closeRate'];
-  inputs.forEach(function(el){
-    el.addEventListener('input',function(){
-      var k=keyFor(el.id);if(!k)return;
-      S[k]=el.value;
-      if(REC_KEYS.indexOf(el.id)>-1){applyRec();fill();}
-      calc();
-    });
+ var roles=[].slice.call(document.querySelectorAll('.role')),
+     ft=document.getElementById('f-type'),fc=document.getElementById('f-commit'),fh=document.getElementById('f-hours'),fs=document.getElementById('f-status'),fl=document.getElementById('f-level'),
+     count=document.getElementById('count'),reset=document.getElementById('reset'),empty=document.getElementById('empty'),
+     tabs=[].slice.call(document.querySelectorAll('.tabs button')),tabnote=document.getElementById('tabnote'),tab='client';
+ var NOTES={client:'Specific openings with companies we work with. Each one has a set team, schedule and start.',
+            rev:'Join Revfinery\'s own team. You apply once, and we place you on a client team when one needs your level and hours.'};
+ function fits(el,c,h){
+  return (c==='all'||el.getAttribute('data-commit').split(' ').indexOf(c)>-1)&&(parseInt(el.getAttribute('data-min'),10)<=h);
+ }
+ function apply(){
+  var t=ft.value,c=fc.value,h=parseInt(fh.value,10),st=fs.value,lv=fl.value,n=0,total=0,per={client:0,rev:0};
+  roles.forEach(function(r){
+   var g=r.getAttribute('data-group');var sd=r.querySelector('.facts dd'),sm=sd?/^(\d+)/.exec(sd.textContent):null;per[g]+=r.classList.contains('multi')?r.querySelectorAll('.hours .btn').length:(sm?parseInt(sm[1],10):1);
+   var ok=(t==='all'||r.getAttribute('data-type')===t)
+     &&(st==='all'||r.getAttribute('data-s')===st)
+     &&(lv==='all'||r.getAttribute('data-level').split(' ').indexOf(lv)>-1);
+   if(r.classList.contains('multi')){
+    var any=false;
+    [].forEach.call(r.querySelectorAll('.hours .btn'),function(b){var f=fits(b,c,h);b.hidden=!f;if(f)any=true;});
+    ok=ok&&any;
+   }else{ok=ok&&fits(r,c,h);}
+   if(g===tab){total++;if(ok)n++;}
+   r.hidden=!(ok&&g===tab);
   });
-  function applySeat(){
-    if(!(S.level in PAYKEY[S.role]))S.level=S.role==='leader'?'bench':(S.level==='bench'?'field':'cohort');
-    S.overhead=OVER[S.level];S.margin=MARGIN[S.role];
-    if(S.role==='bdr'&&num(S.hours)>=35)S.margin=40;
-    var t=tierOfHours(num(S.hours));
-    S.meetings=S.role==='bdr'&&t?S['bk'+t]:'';
-    S.quote='';fill();calc();
-  }
-  function onChip(id,fn){$(id).addEventListener('click',function(e){var b=e.target.closest('button');if(b)fn(b);});}
-  onChip('modes',function(b){S.mode=b.dataset.mode;fill();calc();window.scrollTo(0,0);});
-  onChip('roles',function(b){S.role=b.dataset.role;applySeat();});
-  onChip('levels',function(b){S.level=b.dataset.level;applySeat();});
-  onChip('tiers',function(b){S.hours=num(b.dataset.h);applySeat();});
-  each('.lv',function(g){
-    g.addEventListener('click',function(e){
-      var b=e.target.closest('button');if(!b)return;
-      var bd=g.dataset.for==='b',flag=bd?'bBlend':'aBlend';
-      if(b.dataset.blend){
-        S[flag]=!S[flag];
-        if(S[flag]){
-          var L=bd?BL:AL,any=L.some(function(l){return cnt(l[1])>0;});
-          if(!any){var lv=bd?S.tBdrLevel:S.tAeLevel,src=cnt(bd?'tBdrN':'tAeN');L.forEach(function(l){if(l[0]===lv)S[l[1]]=src||'';});}
-        }
-      }else{S[flag]=false;S[bd?'tBdrLevel':'tAeLevel']=b.dataset.level;}
-      S.tQuote='';fill();calc();
-    });
-  });
-  function togglePart(k){
-    S[k]=!S[k];
-    if(k==='inLd'&&S.inLd&&!num(S.tLdHours))S.tLdHours=10;
-    if(k==='inPm')S.pmAutoOff=false;
-    if(k==='inLd'&&teamTier())setPm(teamTier());
-    S.tQuote='';fill();calc();
-  }
-  onChip('parts',function(b){togglePart(b.dataset.part);});
-  $('addLd').addEventListener('click',function(){if(!S.inLd)togglePart('inLd');});
-  $('removeLd').addEventListener('click',function(){if(S.inLd)togglePart('inLd');});
-  onChip('pmModes',function(b){S.pmMode=b.dataset.pmMode;S.tQuote='';fill();calc();});
-  onChip('ldModes',function(b){S.ldMode=b.dataset.ld;S.tQuote='';fill();calc();});
-  onChip('teamTiers',function(b){setSize(num(b.dataset.h));fill();calc();});
-  onChip('empModes',function(b){S.emp=S.emp===b.dataset.emp?'':b.dataset.emp;S.tQuote='';S.quote='';fill();calc();});
-  onChip('termUnits',function(b){S.termUnit=b.dataset.unit;calc();});
-  $('useRec').addEventListener('click',function(){useRecommended();fill();calc();});
-  var stSel=$('st');
-  Object.keys(SUI).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SUI[k][0];stSel.appendChild(o);});
-  stSel.addEventListener('change',function(){S.st=stSel.value;S.suiRate=SUI[S.st][1];S.suiBase=SUI[S.st][2];fill();calc();});
-  $('clearQuote').addEventListener('click',function(){var m=S.mode;Object.assign(S,QUOTE);S.mode=m;fill();calc();window.scrollTo(0,0);});
-  $('resetAll').addEventListener('click',function(){Object.assign(S,SETTINGS);fill();calc();});
-
-  /* ---------- download ---------- */
-  var dlBtn=$('dl'),dlNote=$('dlNote'),downloads=null;
-  function say(cls,t){dlNote.className='note'+(cls?' '+cls:'');dlNote.textContent=t;}
-  var ready=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads'):Promise.resolve(null);
-  ready.then(function(d){
-    downloads=d;
-  },function(){downloads=null;});
-  dlBtn.addEventListener('click',function(){
-    if(!P){say('mid','Build a quote first, then download the proposal.');return;}
-    var doc;
-    try{doc=makePdf(P);}catch(e){say('bad','The PDF could not be created. '+(e&&e.message?e.message:''));return;}
-    var name='Revfinery proposal'+(P.client?' - '+P.client.replace(/[^A-Za-z0-9 ]/g,'').replace(/\s+/g,' ').trim():'')+'.pdf';
-    if(!downloads){
-      try{doc.save(name);say('good','Proposal downloaded.');}catch(e){say('bad','The PDF could not be saved on this device.');}
-      return;
-    }
-    say('','Preparing your PDF.');
-    downloads.save({filename:name,data:doc.output('blob')}).then(function(){say('good','Proposal saved.');},function(err){
-      var c=err&&err.code;
-      if(c==='declined')say('','');
-      else if(c==='rate_limited')say('mid','A save is already open. Finish that one, then try again.');
-      else say('bad','The PDF could not be saved here.');
-    });
-  });
-
-  fill();calc();
+  document.getElementById('n-client').textContent='('+per.client+' openings)';
+  document.getElementById('n-rev').textContent='('+per.rev+' openings)';
+  document.getElementById('total').textContent=per.client+per.rev;
+  count.textContent='Showing '+n+' of '+total+' roles';
+  tabnote.textContent=NOTES[tab];
+  empty.hidden=n>0;
+  reset.hidden=(t==='all'&&c==='all'&&fh.value==='99'&&st==='all'&&lv==='all');
+ }
+ tabs.forEach(function(b){b.addEventListener('click',function(){
+  tab=b.getAttribute('data-tab');
+  tabs.forEach(function(x){x.setAttribute('aria-selected',String(x===b));});
+  apply();
+ });});
+ [ft,fc,fh,fs,fl].forEach(function(el){el.addEventListener('change',apply)});
+ reset.addEventListener('click',function(){ft.value='all';fc.value='all';fh.value='99';fs.value='all';fl.value='all';apply()});
+ apply();
 })();
 </script>
 </body>
