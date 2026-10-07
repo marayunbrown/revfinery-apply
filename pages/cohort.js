@@ -1,171 +1,222 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { ArrowLeft, ArrowRight, Check, CheckCircle, GraduationCap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 
-const HUBSPOT_PORTAL_ID = '244430724';
-const HUBSPOT_FORM_ID = '4d4e2afd-64de-4ed9-bd9b-57b6162ad4d0'; // Using network form, can change to cohort-specific
+// One HubSpot form receives all three applications. The level is saved on every applicant.
+const PORTAL_ID = '244430724';
+const FORM_ID = '00fbf759-567b-4840-9222-7543849bbf80';
+const JSON_HOSTS = ['api.hsforms.com', 'api-na2.hsforms.com'];
+const UPLOAD_HOSTS = ['forms-na2.hubspot.com', 'forms.hubspot.com'];
 
+const LEVEL = 'Cohort';
+const ACCENT = '#ffd166';
+const ACCENT_TEXT = '#0e2a2d';
+const ACCENT_SOFT = '#fff7e8';
+const LINKEDIN_REQUIRED = false;
+
+const STATES = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'Outside the US'];
+const TIME_BLOCKS = ['Weekday mornings', 'Weekday afternoons', 'Weekday evenings', 'Weekends'];
+const WORK_OPTIONS = ['Booking meetings (BDR)', 'Closing deals (Account Executive)'];
+const TYPE_TO_WORK = { 'BDR': 'Booking meetings (BDR)', 'Account Executive': 'Closing deals (Account Executive)', 'Sales Leader': 'Leading a team' };
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const HOURS_OPTIONS = ['Up to 8', '8 to 15', '15 to 20', '20 to 30', 'Full-time'];
-const HEARD_FROM_OPTIONS = ['LinkedIn', 'University/Professor', 'Friend/Referral', 'Google search', 'Revfinery website', 'Social media', 'Other'];
+// The year list is built from today's date, so it never needs updating.
+const THIS_YEAR = new Date().getFullYear();
+const GRAD_YEARS = Array.from({ length: 13 }, (_, i) => String(THIS_YEAR - 6 + i));
+const MAX_RESUME_MB = 5;
 
-export default function CohortApplication() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+const labelStyle = { display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d' };
+const inputStyle = { width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box', backgroundColor: 'white', color: '#0e2a2d', fontFamily: 'inherit' };
+const hintStyle = { fontSize: '13px', color: '#6b7d80', margin: '6px 0 0' };
+const groupStyle = { marginBottom: '18px' };
+
+const onlyNumber = (value) => String(value).replace(/[^0-9.]/g, '');
+
+function Chips({ options, selected, onToggle }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      {options.map((option) => {
+        const active = selected.includes(option);
+        return (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onToggle(option)}
+            style={{ padding: '10px 16px', border: active ? `2px solid ${ACCENT}` : '2px solid #eaf6f7', borderRadius: '20px', backgroundColor: active ? ACCENT_SOFT : 'white', cursor: 'pointer', fontSize: '14px', color: '#0e2a2d', fontWeight: active ? '700' : '500', fontFamily: 'inherit' }}
+          >
+            {option}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function Application() {
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
   const [role, setRole] = useState('');
-  const [gradYears, setGradYears] = useState([]);
-  const [gradMonth, setGradMonth] = useState('');
-  const [gradYear, setGradYear] = useState('');
-
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    linkedin: '',
-    school: '',
-    major: '',
-    graduationYear: '',
-    hoursAvailable: '',
-    city: '',
-    whySales: '',
-    whatHoping: '',
-    heardFrom: '',
-    message: ''
+  const [roleType, setRoleType] = useState('');
+  const [roleHours, setRoleHours] = useState('');
+  const [resume, setResume] = useState(null);
+  const [resumeError, setResumeError] = useState('');
+  const [f, setF] = useState({
+    firstName: '', lastName: '', email: '', phone: '', linkedin: '', state: '',
+    hours: '', timeBlocks: [], workInterests: [],
+    school: '', gradMonth: '', gradYear: '', recentJob: '', years: ''
   });
 
   const totalSteps = 3;
+  const isPM = roleType === 'Project Manager';
 
-  // If the applicant came from the job board, the role they tapped arrives in the link (?role=...)
+  // The job board button passes the role in the link, for example ?role=...&type=BDR&hours=40
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const type = params.get('type') || '';
     setRole(params.get('role') || '');
-    // Year choices are built from today's date, so the list never needs updating
-    const thisYear = new Date().getFullYear();
-    setGradYears(Array.from({ length: 7 }, (_, i) => String(thisYear + i)));
+    setRoleType(type);
+    setRoleHours(params.get('hours') || '');
+    if (TYPE_TO_WORK[type] && WORK_OPTIONS.includes(TYPE_TO_WORK[type])) {
+      setF((prev) => ({ ...prev, workInterests: [TYPE_TO_WORK[type]] }));
+    }
   }, []);
 
-  const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const set = (field, value) => setF((prev) => ({ ...prev, [field]: value }));
+  const toggle = (field, value, max) => setF((prev) => {
+    const list = prev[field];
+    if (list.includes(value)) return { ...prev, [field]: list.filter((item) => item !== value) };
+    if (max && list.length >= max) return prev;
+    return { ...prev, [field]: [...list, value] };
+  });
 
-  // Graduation is stored in one fixed format: "May 2028" or "Already graduated"
-  const updateGraduation = (month, year) => {
-    setGradMonth(month);
-    setGradYear(year);
-    let value = '';
-    if (year === 'Already graduated') value = 'Already graduated';
-    else if (month && year) value = `${month} ${year}`;
-    updateField('graduationYear', value);
+  const chooseResume = (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (file.size > MAX_RESUME_MB * 1024 * 1024) {
+      setResume(null);
+      setResumeError(`That file is larger than ${MAX_RESUME_MB} MB. Please choose a smaller one.`);
+      return;
+    }
+    setResumeError('');
+    setResume(file);
   };
 
   const canProceed = () => {
-    switch (currentStep) {
-      case 1:
-        return formData.firstName && formData.lastName && formData.email && formData.email.includes('@');
-      case 2:
-        return formData.graduationYear && formData.whySales;
-      case 3:
-        return formData.heardFrom;
-      default:
-        return false;
+    if (step === 1) {
+      return Boolean(f.firstName && f.lastName && f.email.includes('@') && f.phone && f.state && (!LINKEDIN_REQUIRED || f.linkedin));
     }
+    if (step === 2) {
+      return Boolean(f.school && f.recentJob && f.years !== '');
+    }
+    return Boolean(f.hours && f.timeBlocks.length > 0 && f.workInterests.length > 0 && resume);
   };
 
-  const submitToHubSpot = async () => {
-    setIsSubmitting(true);
+  const submit = async () => {
+    setSubmitting(true);
+    setError('');
 
-    // Role and hours are added to the message so they reach HubSpot without needing new properties
-    const notes = [
-      role ? `Interested in: ${role}` : '',
-      formData.hoursAvailable ? `Hours available a week: ${formData.hoursAvailable}` : '',
-      formData.message
-    ].filter(Boolean).join(' | ');
+    const core = [
+      ['firstname', f.firstName.trim()],
+      ['lastname', f.lastName.trim()],
+      ['email', f.email.trim()],
+      ['phone', f.phone.trim()],
+      ['hs_linkedin_url', f.linkedin.trim()],
+      ['state', f.state],
+      ['role_applied_for', role || `Talent Network, ${LEVEL} level`],
+      ['application_level', LEVEL],
+      ['role_type', roleType || 'Talent Network'],
+      ['application_status', 'Reviewing'],
+      ['weekday_availability', f.timeBlocks.join(', ')],
+      ['work_interests', f.workInterests.join(', ')]
+    ];
+    const answers = [
+      ['applicant_hours_per_week', f.hours],
+      ['school', f.school.trim()],
+      ['graduation_date', f.gradYear && f.gradMonth ? `${f.gradYear}-${f.gradMonth}` : ''],
+      ['prior_jobs', f.recentJob.trim()],
+      ['applicant_years_of_experience', f.years]
+    ];
 
-    const data = {
-      fields: [
-        { name: 'firstname', value: formData.firstName },
-        { name: 'lastname', value: formData.lastName },
-        { name: 'email', value: formData.email },
-        { name: 'linkedin_url', value: formData.linkedin },
-        { name: 'city', value: formData.city },
-        { name: 'school', value: formData.school },
-        { name: 'major', value: formData.major },
-        { name: 'graduation_year', value: formData.graduationYear },
-        { name: 'why_sales', value: formData.whySales },
-        { name: 'what_hoping', value: formData.whatHoping },
-        { name: 'heard_from', value: formData.heardFrom },
-        { name: 'message', value: notes },
-        { name: 'application_type', value: 'University Cohort' }
-      ],
-      context: {
-        pageUri: window.location.href,
-        pageName: 'University Cohort Application'
-      }
-    };
+    const toFields = (pairs) => pairs
+      .filter((pair) => pair[1] !== '' && pair[1] !== null && pair[1] !== undefined)
+      .map((pair) => ({ name: pair[0], value: String(pair[1]) }));
+    const context = { pageUri: window.location.href, pageName: `${LEVEL} Application` };
+    const summary = toFields(answers).map((field) => `${field.name}: ${field.value}`).join(' | ');
 
-    try {
-      const response = await fetch(
-        `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+    // First try sends every answer to its own property. If HubSpot rejects one,
+    // the second try keeps the application by saving the answers in the message.
+    const payloads = [
+      { fields: toFields(core.concat(answers)), context },
+      { fields: toFields(core.concat([['message', summary]])), context }
+    ];
+
+    let saved = false;
+    for (const payload of payloads) {
+      for (const host of JSON_HOSTS) {
+        try {
+          const response = await fetch(`https://${host}/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_ID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (response.ok) { saved = true; break; }
+          console.error('HubSpot error:', await response.text());
+        } catch (err) {
+          console.error('Submission error:', err);
         }
-      );
-
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        const errorData = await response.json();
-        console.error('HubSpot error:', errorData);
-        alert('There was an error submitting your application. Please try again.');
       }
-    } catch (error) {
-      console.error('Submission error:', error);
-      alert('There was an error submitting your application. Please try again.');
+      if (saved) break;
     }
 
-    setIsSubmitting(false);
+    if (!saved) {
+      setError('We could not send your application. Please check your connection and try again.');
+      setSubmitting(false);
+      return;
+    }
+
+    // The resume goes in a second call, because the first one cannot carry a file.
+    if (resume) {
+      for (const host of UPLOAD_HOSTS) {
+        try {
+          const body = new FormData();
+          body.append('email', f.email.trim());
+          body.append('resume', resume, resume.name);
+          body.append('hs_context', JSON.stringify({ pageUrl: window.location.href, pageName: `${LEVEL} Application` }));
+          await fetch(`https://${host}/uploads/form/v2/${PORTAL_ID}/${FORM_ID}`, { method: 'POST', mode: 'no-cors', body });
+          break;
+        } catch (err) {
+          console.error('Resume upload error:', err);
+        }
+      }
+    }
+
+    setSubmitted(true);
+    setSubmitting(false);
   };
 
-  if (isSubmitted) {
+  const pageStyle = { minHeight: '100vh', background: 'linear-gradient(135deg, #fff7e8 0%, #fbf6f1 50%, #eaf6f7 100%)', padding: '24px 16px', fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif' };
+
+  if (submitted) {
     return (
       <>
         <Head>
-          <title>Application Submitted | Revfinery University Cohort</title>
+          <title>Application received | Revfinery Talent Network</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
         </Head>
-        <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #fff7e8 0%, #fbf6f1 50%, #eaf6f7 100%)', padding: '24px'}}>
-          <div style={{maxWidth: '480px', width: '100%', textAlign: 'center', padding: '48px 32px', backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)'}}>
-            <div style={{width: '80px', height: '80px', margin: '0 auto 24px', borderRadius: '50%', backgroundColor: '#ffd166', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <GraduationCap style={{width: '40px', height: '40px', color: '#0e2a2d'}} />
+        <div style={{ ...pageStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ maxWidth: '480px', width: '100%', textAlign: 'center', padding: '48px 28px', backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+            <div style={{ width: '72px', height: '72px', margin: '0 auto 20px', borderRadius: '50%', backgroundColor: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle style={{ width: '36px', height: '36px', color: ACCENT_TEXT }} />
             </div>
-            <h1 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '12px', color: '#0e2a2d'}}>Application Received!</h1>
-            <p style={{color: '#4c5f62', marginBottom: '24px', lineHeight: '1.6'}}>
-              Thanks for applying to the University Cohort. We review applications weekly and will reach out with next steps, including your cohort code if you're accepted.
+            <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 12px', color: '#0e2a2d' }}>Application received</h1>
+            <p style={{ color: '#4c5f62', margin: '0 0 24px', lineHeight: '1.6' }}>
+              Thanks for applying{role ? ` for ${role}` : ''}. We review applications every week and will email you about next steps.
             </p>
-            <div style={{padding: '16px', backgroundColor: '#fff7e8', borderRadius: '12px', marginBottom: '24px'}}>
-              <p style={{fontSize: '14px', color: '#5b3e2a', fontWeight: '600', marginBottom: '8px'}}>What happens next:</p>
-              <ul style={{textAlign: 'left', fontSize: '14px', color: '#3a5052', margin: '0', paddingLeft: '20px'}}>
-                <li style={{marginBottom: '4px'}}>We'll review your application</li>
-                <li style={{marginBottom: '4px'}}>If accepted, you'll receive your cohort code by email</li>
-                <li style={{marginBottom: '4px'}}>Sign up at trainer.revfinery.com with your code and start training</li>
-                <li>We'll match you with paid BDR work as roles open</li>
-              </ul>
-            </div>
-            <a 
-              href="/roles/" 
-              style={{display: 'inline-block', padding: '12px 24px', backgroundColor: '#f25025', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', marginBottom: '12px'}}
-            >
-              See open roles
-            </a>
+            <a href="/roles/" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#f25025', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', marginBottom: '12px' }}>See open roles</a>
             <br />
-            <a 
-              href="https://www.revfinery.com/talent-network" 
-              style={{display: 'inline-block', padding: '12px 24px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600'}}
-            >
-              Back to Talent Network
-            </a>
+            <a href="https://www.revfinery.com/talent-network" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600' }}>Back to Talent Network</a>
           </div>
         </div>
       </>
@@ -175,347 +226,172 @@ export default function CohortApplication() {
   return (
     <>
       <Head>
-        <title>Apply | Revfinery University Cohort</title>
-        <meta name="description" content="Apply to the Revfinery University Cohort for sales training and paid BDR work on a flexible schedule while you're still in university." />
+        <title>Apply to the Cohort | Revfinery Talent Network</title>
+        <meta name="description" content="For students, new graduates and career changers with under 3 years in sales." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
       </Head>
 
-      <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #fff7e8 0%, #fbf6f1 50%, #eaf6f7 100%)', padding: '24px 16px'}}>
-        <div style={{maxWidth: '600px', margin: '0 auto'}}>
-          
-          {/* Header */}
-          <div style={{textAlign: 'center', marginBottom: '32px'}}>
-            <a href="https://www.revfinery.com/talent-network" style={{display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#4c5f62', textDecoration: 'none', fontSize: '14px', marginBottom: '16px'}}>
+      <div style={pageStyle}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <a href="/roles/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#4c5f62', textDecoration: 'none', fontSize: '14px', marginBottom: '16px' }}>
               <ArrowLeft size={16} />
-              Back to Talent Network
+              Back to open roles
             </a>
-            <div style={{display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#ffd166', padding: '6px 14px', borderRadius: '20px', marginBottom: '12px'}}>
-              <GraduationCap size={16} />
-              <span style={{fontWeight: '700', fontSize: '13px', color: '#0e2a2d'}}>University Cohort</span>
+            <div>
+              <span style={{ display: 'inline-block', backgroundColor: ACCENT, color: ACCENT_TEXT, padding: '6px 14px', borderRadius: '20px', marginBottom: '12px', fontWeight: '700', fontSize: '13px' }}>{LEVEL} level</span>
             </div>
-            <h1 style={{fontSize: '28px', fontWeight: 'bold', color: '#0e2a2d', margin: '0 0 8px'}}>Apply to the University Cohort</h1>
-            <p style={{color: '#4c5f62', margin: '0'}}>Sales training and paid BDR work on a flexible schedule while you're still in university.</p>
+            <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e2a2d', margin: '0 0 8px' }}>Apply to the Cohort</h1>
+            <p style={{ color: '#4c5f62', margin: '0' }}>For students, new graduates and career changers with under 3 years in sales.</p>
             {role && (
-              <p style={{display: 'inline-block', margin: '14px 0 0', padding: '8px 14px', backgroundColor: '#eaf6f7', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0c6b73'}}>
+              <p style={{ display: 'inline-block', margin: '14px 0 0', padding: '8px 14px', backgroundColor: '#eaf6f7', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0c6b73' }}>
                 You're applying for: {role}
               </p>
             )}
           </div>
 
-          {/* Progress */}
-          <div style={{display: 'flex', gap: '8px', marginBottom: '24px'}}>
-            {[1, 2, 3].map((step) => (
-              <div 
-                key={step}
-                style={{
-                  flex: 1,
-                  height: '4px',
-                  borderRadius: '2px',
-                  backgroundColor: step <= currentStep ? '#ffd166' : '#e5e7eb'
-                }}
-              />
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }} aria-hidden="true">
+            {[1, 2, 3].map((n) => (
+              <div key={n} style={{ flex: 1, height: '5px', borderRadius: '3px', backgroundColor: n <= step ? ACCENT : '#e5e7eb' }} />
             ))}
           </div>
 
-          {/* Form Card */}
-          <div style={{backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', padding: '32px'}}>
-            
-            {/* Step 1: Basic Info */}
-            {currentStep === 1 && (
+          <div style={{ backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', padding: '28px 22px' }}>
+
+            {step === 1 && (
               <div>
-                <h2 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#0e2a2d'}}>Tell us about yourself</h2>
-                
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px'}}>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 20px', color: '#0e2a2d' }}>About you</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
                   <div>
-                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>First Name *</label>
-                    <input
-                      type="text"
-                      value={formData.firstName}
-                      onChange={(e) => updateField('firstName', e.target.value)}
-                      placeholder="Alex"
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                    />
+                    <label htmlFor="firstName" style={labelStyle}>First name *</label>
+                    <input id="firstName" type="text" autoComplete="given-name" value={f.firstName} onChange={(e) => set('firstName', e.target.value)} style={inputStyle} />
                   </div>
                   <div>
-                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Last Name *</label>
-                    <input
-                      type="text"
-                      value={formData.lastName}
-                      onChange={(e) => updateField('lastName', e.target.value)}
-                      placeholder="Johnson"
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                    />
+                    <label htmlFor="lastName" style={labelStyle}>Last name *</label>
+                    <input id="lastName" type="text" autoComplete="family-name" value={f.lastName} onChange={(e) => set('lastName', e.target.value)} style={inputStyle} />
                   </div>
                 </div>
-
-                <div style={{marginBottom: '16px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Email *</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => updateField('email', e.target.value)}
-                    placeholder="alex@university.edu"
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                  />
+                <div style={groupStyle}>
+                  <label htmlFor="email" style={labelStyle}>Email *</label>
+                  <input id="email" type="email" autoComplete="email" value={f.email} onChange={(e) => set('email', e.target.value)} style={inputStyle} />
                 </div>
-
-                <div style={{marginBottom: '16px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>LinkedIn URL</label>
-                  <input
-                    type="url"
-                    value={formData.linkedin}
-                    onChange={(e) => updateField('linkedin', e.target.value)}
-                    placeholder="linkedin.com/in/alexjohnson"
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                  />
+                <div style={groupStyle}>
+                  <label htmlFor="phone" style={labelStyle}>Phone *</label>
+                  <input id="phone" type="tel" autoComplete="tel" value={f.phone} onChange={(e) => set('phone', e.target.value)} style={inputStyle} />
                 </div>
-
+                <div style={groupStyle}>
+                  <label htmlFor="linkedin" style={labelStyle}>LinkedIn URL{LINKEDIN_REQUIRED ? ' *' : ''}</label>
+                  <input id="linkedin" type="url" value={f.linkedin} onChange={(e) => set('linkedin', e.target.value)} placeholder="linkedin.com/in/yourname" style={inputStyle} />
+                </div>
                 <div>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>City</label>
-                  <input
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => updateField('city', e.target.value)}
-                    placeholder="Atlanta, GA"
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                  />
+                  <label htmlFor="state" style={labelStyle}>State *</label>
+                  <select id="state" value={f.state} onChange={(e) => set('state', e.target.value)} style={inputStyle}>
+                    <option value="">Choose your state</option>
+                    {STATES.map((name) => <option key={name} value={name}>{name}</option>)}
+                  </select>
                 </div>
               </div>
             )}
 
-            {/* Step 2: Background */}
-            {currentStep === 2 && (
+            {step === 2 && (
               <div>
-                <h2 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#0e2a2d'}}>Your background</h2>
-                
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px'}}>
-                  <div>
-                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>School/University</label>
-                    <input
-                      type="text"
-                      value={formData.school}
-                      onChange={(e) => updateField('school', e.target.value)}
-                      placeholder="Georgia Tech"
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                    />
-                  </div>
-                  <div>
-                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Major/Field</label>
-                    <input
-                      type="text"
-                      value={formData.major}
-                      onChange={(e) => updateField('major', e.target.value)}
-                      placeholder="Business, Communications..."
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                    />
-                  </div>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 20px', color: '#0e2a2d' }}>Your experience</h2>
+                <div style={groupStyle}>
+                  <label htmlFor="school" style={labelStyle}>School *</label>
+                  <input id="school" type="text" value={f.school} onChange={(e) => set('school', e.target.value)} placeholder="" style={inputStyle} />
+                  <p style={hintStyle}>Write None if you did not attend one.</p>
                 </div>
-
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Expected Graduation *</label>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
-                    <select
-                      value={gradMonth}
-                      onChange={(e) => updateGraduation(e.target.value, gradYear)}
-                      disabled={gradYear === 'Already graduated'}
-                      aria-label="Graduation month"
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box', backgroundColor: 'white', color: '#0e2a2d'}}
-                    >
+                <div style={groupStyle}>
+                  <span style={labelStyle}>Graduation month and year</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <select aria-label="Graduation month" value={f.gradMonth} onChange={(e) => set('gradMonth', e.target.value)} style={inputStyle}>
                       <option value="">Month</option>
-                      {MONTHS.map(month => (
-                        <option key={month} value={month}>{month}</option>
-                      ))}
+                      {MONTHS.map((name, index) => <option key={name} value={String(index + 1).padStart(2, '0')}>{name}</option>)}
                     </select>
-                    <select
-                      value={gradYear}
-                      onChange={(e) => updateGraduation(gradMonth, e.target.value)}
-                      aria-label="Graduation year"
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box', backgroundColor: 'white', color: '#0e2a2d'}}
-                    >
+                    <select aria-label="Graduation year" value={f.gradYear} onChange={(e) => set('gradYear', e.target.value)} style={inputStyle}>
                       <option value="">Year</option>
-                      {gradYears.map(year => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                      <option value="Already graduated">Already graduated</option>
+                      {GRAD_YEARS.map((year) => <option key={year} value={year}>{year}</option>)}
                     </select>
                   </div>
+                  <p style={hintStyle}>Leave blank if this doesn't apply to you.</p>
                 </div>
-
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Hours you can work a week</label>
-                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
-                    {HOURS_OPTIONS.map(hours => (
-                      <button
-                        key={hours}
-                        type="button"
-                        onClick={() => updateField('hoursAvailable', hours)}
-                        style={{
-                          padding: '10px 16px',
-                          border: formData.hoursAvailable === hours ? '2px solid #ffd166' : '2px solid #eaf6f7',
-                          borderRadius: '20px',
-                          backgroundColor: formData.hoursAvailable === hours ? '#fff7e8' : 'white',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          color: '#0e2a2d',
-                          fontWeight: formData.hoursAvailable === hours ? '600' : '400'
-                        }}
-                      >
-                        {hours}
-                      </button>
-                    ))}
-                  </div>
+                <div style={groupStyle}>
+                  <label htmlFor="recentJob" style={labelStyle}>Most recent job or internship *</label>
+                  <input id="recentJob" type="text" value={f.recentJob} onChange={(e) => set('recentJob', e.target.value)} placeholder="Title and employer" style={inputStyle} />
                 </div>
-
-                <div style={{marginBottom: '16px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Why do you want to get into sales? *</label>
-                  <textarea
-                    value={formData.whySales}
-                    onChange={(e) => updateField('whySales', e.target.value)}
-                    placeholder="What draws you to a sales career? What do you hope to achieve?"
-                    rows={4}
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
-                  />
-                </div>
-
-                <div>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>What are you hoping to get from this program?</label>
-                  <textarea
-                    value={formData.whatHoping}
-                    onChange={(e) => updateField('whatHoping', e.target.value)}
-                    placeholder="Skills, confidence, paid experience, networking..."
-                    rows={3}
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
-                  />
+                <div style={groupStyle}>
+                  <label htmlFor="years" style={labelStyle}>Years of sales or customer-facing experience *</label>
+                  <input id="years" type="text" inputMode="decimal" value={f.years} onChange={(e) => set('years', onlyNumber(e.target.value))} placeholder="For example, 1" style={inputStyle} />
+                  <p style={hintStyle}>Enter 0 if you have none yet.</p>
                 </div>
               </div>
             )}
 
-            {/* Step 3: Final */}
-            {currentStep === 3 && (
+            {step === 3 && (
               <div>
-                <h2 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#0e2a2d'}}>Almost done!</h2>
-                
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>How did you hear about us? *</label>
-                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
-                    {HEARD_FROM_OPTIONS.map(option => (
-                      <button
-                        key={option}
-                        type="button"
-                        onClick={() => updateField('heardFrom', option)}
-                        style={{
-                          padding: '10px 16px',
-                          border: formData.heardFrom === option ? '2px solid #ffd166' : '2px solid #eaf6f7',
-                          borderRadius: '20px',
-                          backgroundColor: formData.heardFrom === option ? '#fff7e8' : 'white',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          color: '#0e2a2d'
-                        }}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 20px', color: '#0e2a2d' }}>Availability and resume</h2>
+                <div style={groupStyle}>
+                  <label htmlFor="hours" style={labelStyle}>Hours you can work a week *</label>
+                  <input id="hours" type="text" inputMode="numeric" value={f.hours} onChange={(e) => set('hours', onlyNumber(e.target.value))} placeholder="For example, 20" style={inputStyle} />
+                  {roleHours && <p style={hintStyle}>This role needs about {roleHours} hours a week.</p>}
                 </div>
-
+                <div style={groupStyle}>
+                  <span style={labelStyle}>When can you work? Choose all that apply *</span>
+                  <Chips options={TIME_BLOCKS} selected={f.timeBlocks} onToggle={(value) => toggle('timeBlocks', value)} />
+                </div>
+                <div style={groupStyle}>
+                  <span style={labelStyle}>Work you want. Choose all that apply *</span>
+                  <Chips options={WORK_OPTIONS} selected={f.workInterests} onToggle={(value) => toggle('workInterests', value)} />
+                </div>
                 <div>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Anything else you'd like us to know?</label>
-                  <textarea
-                    value={formData.message}
-                    onChange={(e) => updateField('message', e.target.value)}
-                    placeholder="Optional..."
-                    rows={4}
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
-                  />
-                </div>
-
-                {/* Program summary */}
-                <div style={{marginTop: '24px', padding: '16px', backgroundColor: '#eaf6f7', borderRadius: '12px'}}>
-                  <p style={{fontSize: '13px', color: '#0c6b73', fontWeight: '600', marginBottom: '8px'}}>What you're applying for:</p>
-                  <ul style={{margin: '0', paddingLeft: '18px', fontSize: '13px', color: '#3a5052'}}>
-                    <li>Sales training from working sellers</li>
-                    <li>Full access to the AI Trainer platform</li>
-                    <li>Paid BDR work on a flexible schedule while you're in university</li>
-                    <li>The chance to move into AE work once you've proven yourself</li>
-                  </ul>
+                  <label htmlFor="resume" style={labelStyle}>Resume *</label>
+                  <input id="resume" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={chooseResume} style={{ ...inputStyle, padding: '12px' }} />
+                  <p style={hintStyle}>{resume ? `Selected: ${resume.name}` : `PDF or Word, up to ${MAX_RESUME_MB} MB.`}</p>
+                  {resumeError && <p role="alert" style={{ ...hintStyle, color: '#b3261e', fontWeight: '600' }}>{resumeError}</p>}
                 </div>
               </div>
             )}
 
-            {/* Navigation */}
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #eaf6f7'}}>
+            {error && <p role="alert" style={{ margin: '20px 0 0', padding: '12px 14px', backgroundColor: '#fdecea', color: '#b3261e', borderRadius: '12px', fontSize: '14px', fontWeight: '600' }}>{error}</p>}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #eaf6f7' }}>
               <button
-                onClick={() => setCurrentStep(prev => prev - 1)}
-                disabled={currentStep === 1}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 20px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: currentStep === 1 ? '#ccc' : '#4c5f62',
-                  cursor: currentStep === 1 ? 'default' : 'pointer',
-                  fontWeight: '600',
-                  fontSize: '15px'
-                }}
+                type="button"
+                onClick={() => setStep((prev) => prev - 1)}
+                disabled={step === 1}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', backgroundColor: 'transparent', border: 'none', color: step === 1 ? '#ccc' : '#4c5f62', cursor: step === 1 ? 'default' : 'pointer', fontWeight: '600', fontSize: '15px', fontFamily: 'inherit' }}
               >
-                <ArrowLeft style={{width: '18px', height: '18px'}} />
+                <ArrowLeft style={{ width: '18px', height: '18px' }} />
                 Back
               </button>
 
-              {currentStep < totalSteps ? (
+              {step < totalSteps ? (
                 <button
-                  onClick={() => setCurrentStep(prev => prev + 1)}
+                  type="button"
+                  onClick={() => setStep((prev) => prev + 1)}
                   disabled={!canProceed()}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '14px 28px',
-                    backgroundColor: canProceed() ? '#ffd166' : '#ccc',
-                    color: '#0e2a2d',
-                    border: 'none',
-                    borderRadius: '12px',
-                    cursor: canProceed() ? 'pointer' : 'default',
-                    fontWeight: '600',
-                    fontSize: '15px'
-                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 26px', backgroundColor: canProceed() ? ACCENT : '#ccc', color: canProceed() ? ACCENT_TEXT : 'white', border: 'none', borderRadius: '12px', cursor: canProceed() ? 'pointer' : 'default', fontWeight: '700', fontSize: '15px', fontFamily: 'inherit' }}
                 >
                   Continue
-                  <ArrowRight style={{width: '18px', height: '18px'}} />
+                  <ArrowRight style={{ width: '18px', height: '18px' }} />
                 </button>
               ) : (
                 <button
-                  onClick={submitToHubSpot}
-                  disabled={!canProceed() || isSubmitting}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '14px 28px',
-                    backgroundColor: canProceed() && !isSubmitting ? '#0c6b73' : '#ccc',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '12px',
-                    cursor: canProceed() && !isSubmitting ? 'pointer' : 'default',
-                    fontWeight: '600',
-                    fontSize: '15px'
-                  }}
+                  type="button"
+                  onClick={submit}
+                  disabled={!canProceed() || submitting}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 26px', backgroundColor: canProceed() && !submitting ? '#0c6b73' : '#ccc', color: 'white', border: 'none', borderRadius: '12px', cursor: canProceed() && !submitting ? 'pointer' : 'default', fontWeight: '700', fontSize: '15px', fontFamily: 'inherit' }}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                  {!isSubmitting && <CheckCircle style={{width: '18px', height: '18px'}} />}
+                  {submitting ? 'Sending...' : 'Submit application'}
+                  {!submitting && <CheckCircle style={{ width: '18px', height: '18px' }} />}
                 </button>
               )}
             </div>
           </div>
 
-          {/* Footer note */}
-          <p style={{textAlign: 'center', fontSize: '13px', color: '#6b7d80', marginTop: '24px'}}>
-            Already have a cohort code? <a href="https://trainer.revfinery.com/signup" style={{color: '#0c6b73', fontWeight: '600'}}>Sign up here</a>
-          </p>
+          <p style={{ textAlign: 'center', fontSize: '13px', color: '#6b7d80', marginTop: '20px' }}>Fields marked * are required.</p>
         </div>
       </div>
     </>
