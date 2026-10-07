@@ -71,6 +71,13 @@ details li{margin-bottom:8px}
 .hours .btn[hidden]{display:none}
 .note{font-size:14px;color:var(--muted);margin-top:22px;text-align:center}
 @media(min-width:640px){.facts{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(5,1fr)}main{padding:30px 20px 70px}.role{padding:26px 26px}}
+.sec{font-weight:900;font-size:24px;letter-spacing:-.02em;margin:26px 0 12px}
+.sec+.secnote{margin-top:-8px}
+.sec:first-child{margin-top:0}
+.secnote{font-size:15px;color:var(--muted);margin:0 0 14px}
+.sub{border-top:1px solid var(--line);margin-top:16px;padding-top:16px}
+.sub h3{font-weight:900;font-size:18px;margin:0 0 10px}
+.sub details{border-top:0;padding-top:0}
 </style>
 </head>
 <body>
@@ -78,32 +85,18 @@ details li{margin-bottom:8px}
  <div class="wrap">
   <div class="brand"><img src="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/6a9e233a3812883238b8de14_Revfinery%20Updated%20Logo%20Tan.avif" alt="Revfinery" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'"><span class="wordmark">Revfinery</span><span class="tn">Talent Network</span></div>
   <h1>Open roles</h1>
-  <p class="open"><b id="total">29</b> openings across client teams and Revfinery's own team</p>
-  <p>Paid sales work with the companies we work with, and every role is remote. Tap a role to read the full description, then tell us you're interested.</p>
+  <p>Paid, remote sales work with the companies we work with. Some teams are hiring today and more are starting soon, so you can apply for any role now and be first in line.</p>
  </div>
 </header>
 
 <main>
  <div class="wrap">
-  <div class="filters">
-   <div><label for="f-type">Role</label><select id="f-type"><option value="all">All roles</option><option value="bdr">BDR</option><option value="ae">Account Executive</option><option value="lead">Sales Leader or Team Lead</option><option value="pm">Project Manager</option></select></div>
-   <div><label for="f-level">Experience level</label><select id="f-level"><option value="all">Any level</option><option value="cohort">Cohort, students and new sellers</option><option value="field">Field, 1 to 5 years</option><option value="bench">Bench, 5+ years</option></select></div>
-   <div><label for="f-commit">Schedule</label><select id="f-commit"><option value="all">Any schedule</option><option value="low">Below 20 hours</option><option value="part">Part-time</option><option value="full">Full-time</option></select></div>
-   <div><label for="f-hours">My hours a week</label><select id="f-hours"><option value="99">Any</option><option value="10">Up to 10</option><option value="25">Up to 25</option><option value="40">40, full-time</option></select></div>
-   <div><label for="f-status">Status</label><select id="f-status"><option value="all">Any status</option><option value="open">Open now</option><option value="soon">Opening soon</option></select></div>
-  </div>
-  <p class="count" aria-live="polite"><span id="count"></span><button type="button" id="reset" hidden>Clear filters</button></p>
-  <div class="tabs" role="tablist" aria-label="Role type">
-   <button type="button" role="tab" id="tab-client" data-tab="client" aria-selected="true">Roles with our clients <span id="n-client"></span></button>
-   <button type="button" role="tab" id="tab-rev" data-tab="rev" aria-selected="false">Roles on Revfinery's team <span id="n-rev"></span></button>
-  </div>
-  <p class="tabnote" id="tabnote"></p>
-  <div class="empty" id="empty" hidden>No roles match those filters yet. Try widening your hours or clearing the filters.</div>
+  <h2 class="sec">Hiring now</h2>
 
-  <article class="role" data-group="client" data-level="cohort field" data-type="bdr" data-commit="full" data-min="40" data-s="open" style="--bar:#0c6b73">
-   <div class="top"><div><h2>Business Development Representative, full-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+  <article class="role" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Business Development Representative, full-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Hiring now</span></span></div>
    <p class="sum">Book qualified meetings with school district leaders for a growing EdTech company.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Experience required</dt><dd>Less than 1 year to 3 years. No prior sales job needed.</dd></div><div><dt>Hours required</dt><dd>About 40 a week</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$50,000 base plus incentives, with on-target earnings around $65,000</dd></div><div><dt>Level</dt><dd>Cohort or Field</dd></div></dl>
+   <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Experience required</dt><dd>Less than 1 year to 3 years. No prior sales job needed.</dd></div><div><dt>Hours required</dt><dd>About 40 a week</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$50,000 base plus incentives, with on-target earnings around $65,000</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
     <li><b>The company:</b> an education technology company whose software is used by public school districts. You'd be employed directly by the company.</li>
     <li><b>What you'll do:</b> call district and school leaders, work past gatekeepers and book qualified meetings for the company's account executives. You'll log every call and follow up on open conversations.</li>
@@ -111,11 +104,11 @@ details li{margin-bottom:8px}
     <li><b>What you'll learn:</b> phone prospecting, how to qualify a buyer and how public sector organizations buy.</li>
     <li><b>Who it suits:</b> graduating seniors and early-career sellers who are comfortable on the phone and want a full-time start in tech sales.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20full-time%2C%20EdTech%20company">I'm interested</a>
+   <a class="btn" href="/cohort/?role=BDR%2C%20full-time%2C%20EdTech%20company&level=Cohort&type=BDR&hours=40">Apply now</a>
   </article>
 
-  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="part" data-min="25" data-s="open" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+  <article class="role" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">EdTech company selling to public school districts</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Hiring now</span></span></div>
    <p class="sum">A set weekday schedule of calling work at $25 an hour, with a bonus for every meeting attended.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>2 seats</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. No experience needed.</dd></div><div><dt>Hours required</dt><dd>25 a week</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, 9 a.m. to 2 p.m.</dd></div><div><dt>Pay</dt><dd>$25 an hour, plus a bonus for each meeting attended</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
@@ -127,26 +120,11 @@ details li{margin-bottom:8px}
     <li><b>What you'll learn:</b> how to open a cold call, handle a gatekeeper and qualify a buyer, with real conversations to show future employers.</li>
     <li><b>Who it suits:</b> current students with weekday mornings free who want paid sales experience before they graduate.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20EdTech%20company">I'm interested</a>
+   <a class="btn" href="/cohort/?role=BDR%2C%20part-time%2C%20EdTech%20company&level=Cohort&type=BDR&hours=25">Apply now</a>
   </article>
 
-  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="low part" data-min="5" data-s="soon" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">Cybersecurity and AI consulting firm expanding into the US</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
-   <p class="sum">Help a technical consulting firm open the US market, working directly with Revfinery's president.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Cybersecurity or technology coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> a consulting firm that delivers cybersecurity, AI and custom software projects, and is building its first US sales channel.</li>
-    <li><b>What you'll do:</b> research target companies, then reach security and IT leaders by email, LinkedIn and phone to book qualified meetings.</li>
-    <li><b>How you're measured:</b> on weekly activity targets, not hours. You choose when to work, with calls made during business hours.</li>
-    <li><b>Support:</b> a weekly coaching session with Revfinery's president, who runs every meeting you book.</li>
-    <li><b>What you'll learn:</b> how to build a target list, write outreach that gets replies and sell a technical service.</li>
-    <li><b>Who it suits:</b> students with a cybersecurity or technology background are preferred.</li>
-   </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20cybersecurity%20and%20AI%20consulting%20firm">I'm interested</a>
-  </article>
-
-  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="low part" data-min="5" data-s="open" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">HCM consulting firm that improves HR and payroll systems</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+  <article class="role" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">HCM consulting firm that improves HR and payroll systems</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Hiring now</span></span></div>
    <p class="sum">Help an HR technology consulting firm reach companies that are underusing their HR and payroll systems.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. HR, business or sales coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
@@ -157,158 +135,11 @@ details li{margin-bottom:8px}
     <li><b>What you'll learn:</b> how to build a target list, write outreach that gets replies and sell a consulting service to HR leaders.</li>
     <li><b>Who it suits:</b> students interested in HR, business or sales are a good fit.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20part-time%2C%20HCM%20consulting%20firm">I'm interested</a>
+   <a class="btn" href="/cohort/?role=BDR%2C%20part-time%2C%20HCM%20consulting%20firm&level=Cohort&type=BDR&hours=5-8">Apply now</a>
   </article>
 
-  <article class="role" data-group="client" data-level="field" data-type="ae" data-commit="full" data-min="40" data-s="soon" style="--bar:#0c6b73">
-   <div class="top"><div><h2>Account Executive</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
-   <p class="sum">Sign up US suppliers for one of the world's largest B2B marketplaces and grow their accounts after the sale.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>4 seats</dd></div><div><dt>Experience required</dt><dd>2 to 5 years of consultative B2B subscription, SaaS or marketplace sales. Must be based in the US.</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$50,000 to $75,000 base, with on-target earnings of $80,000 to $115,000, depending on experience</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
-    <li><b>What you'll do:</b> own each supplier from first contact through discovery, proposal, close and registration. You work an assigned pool of leads and add your own prospecting.</li>
-    <li><b>After the sale:</b> you keep your accounts and help each supplier with onboarding, advertising, upgrades and renewal.</li>
-    <li><b>Support:</b> you're part of a Revfinery-managed team with a team lead and weekly call reviews, and the client provides product training and a playbook.</li>
-    <li><b>What you'll learn:</b> how to run a full sales cycle at volume and grow a book of accounts you own.</li>
-    <li><b>Who it suits:</b> sellers with closing experience in subscription, SaaS or marketplace sales who know the US supplier market.</li>
-   </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20global%20B2B%20marketplace">I'm interested</a>
-  </article>
-
-  <article class="role" data-group="client" data-level="cohort" data-type="bdr" data-commit="full" data-min="40" data-s="soon" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
-   <p class="sum">Find and qualify US suppliers, and book meetings for the account executives.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Open to graduating seniors and new graduates. Must be based in the US.</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Pay</dt><dd>$40,000 to $55,000 base, with on-target earnings of $55,000 to $70,000, depending on experience</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
-    <li><b>What you'll do:</b> prospect new supplier accounts by phone and email, qualify them against set criteria and book meetings for the account executives.</li>
-    <li><b>Schedule:</b> full-time, Monday to Friday, during regular business hours.</li>
-    <li><b>Support:</b> you're part of a Revfinery-managed team with a team lead and weekly call reviews.</li>
-    <li><b>What you'll learn:</b> how to build a target list, open a conversation and qualify a buyer, with a path to an AE seat for strong performers.</li>
-    <li><b>Who it suits:</b> graduating seniors and new graduates who want full-time experience with a well-known global company.</li>
-   </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20global%20B2B%20marketplace">I'm interested</a>
-  </article>
-
-  <article class="role" data-group="client" data-level="field bench" data-type="lead" data-commit="full" data-min="40" data-s="soon" style="--bar:#f25025">
-   <div class="top"><div><h2>Sales Team Lead</h2><p class="client">Global B2B marketplace, US partner program</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Opening soon</span></span></div>
-   <p class="sum">Lead and coach a team of sellers working one of the world's largest B2B marketplaces.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>5 or more years, including coaching or leading other sellers. Must be based in the US.</dd></div><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours, plus a weekly team review</dd></div><div><dt>Pay</dt><dd>$65,000 to $90,000 base, with on-target earnings of $95,000 to $130,000, depending on experience</dd></div><div><dt>Level</dt><dd>Field or Bench</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
-    <li><b>What you'll do:</b> manage a team of four account executives and one BDR day to day, review their calls every week and run the forecast.</li>
-    <li><b>What you own:</b> the team's activity, pipeline and results, the weekly business review with the client, and renewals and account growth across the team's suppliers.</li>
-    <li><b>Support:</b> you work directly with Revfinery's leadership on coaching and strategy.</li>
-    <li><b>What you'll learn:</b> how to run a sales team for a global brand, with a results record you can point to.</li>
-    <li><b>Who it suits:</b> sellers with five or more years of closing experience who have coached or led others.</li>
-   </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Sales%20Team%20Lead%2C%20global%20B2B%20marketplace">I'm interested</a>
-  </article>
-
-  <article class="role multi" data-group="rev" data-level="cohort" data-type="bdr" data-s="open" style="--bar:#e8a020">
-   <div class="top"><div><h2>Business Development Representative, Cohort level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
-   <p class="sum">Start your sales career on Revfinery's own team, booking meetings for the clients we place you with.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>Students, new graduates and career changers. No prior sales job needed.</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$20 an hour, plus $50 for each meeting held</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
-    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
-    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
-    <li><b>What you'll do:</b> research target accounts, reach buyers by phone, email and LinkedIn, and book qualified meetings for the account executive on your team.</li>
-    <li><b>How you're measured:</b> on weekly KPIs agreed with the client, which your project manager tracks and reviews with you.</li>
-    <li><b>Support:</b> weekly call reviews and coaching, plus full access to Revfinery's AI sales trainer.</li>
-    <li><b>Who it suits:</b> students, new graduates and career changers who want paid sales experience with coaching built in.</li>
-   </ul></details>
-   <p class="pick">Choose your hours to apply</p>
-   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20Cohort%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20Cohort%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/cohort/?role=BDR%2C%20Cohort%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
-  </article>
-
-  <article class="role multi" data-group="rev" data-level="field" data-type="bdr" data-s="open" style="--bar:#0c6b73">
-   <div class="top"><div><h2>Business Development Representative, Field level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
-   <p class="sum">Bring your prospecting experience to Revfinery's client teams and book qualified meetings with less ramp time.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>1 to 5 years in a paid sales role, including outbound prospecting</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$25 an hour, plus $50 for each meeting held</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
-    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
-    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
-    <li><b>What you'll do:</b> build and work a target account list, reach buyers by phone, email and LinkedIn, and book qualified meetings for the account executive on your team.</li>
-    <li><b>How you're measured:</b> on weekly KPIs agreed with the client, which your project manager tracks and reviews with you.</li>
-    <li><b>Support:</b> weekly call reviews, plus full access to Revfinery's AI sales trainer.</li>
-    <li><b>Who it suits:</b> sellers who have prospected before and can run their own outreach with light direction.</li>
-   </ul></details>
-   <p class="pick">Choose your hours to apply</p>
-   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20Field%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20Field%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/network/?role=BDR%2C%20Field%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
-  </article>
-
-  <article class="role multi" data-group="rev" data-level="cohort" data-type="ae" data-s="open" style="--bar:#e8a020">
-   <div class="top"><div><h2>Account Executive, Cohort level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
-   <p class="sum">Learn to close on Revfinery's client teams, running meetings on smaller deals with coaching on every one.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>Under a year in a paid closing role. Prospecting or customer-facing experience preferred.</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$28 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
-    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
-    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
-    <li><b>What you'll do:</b> run discovery calls from the meetings your BDR books, write proposals, follow up and close, starting with smaller and simpler deals.</li>
-    <li><b>How you're measured:</b> on the KPIs and revenue targets agreed with the client at kickoff.</li>
-    <li><b>Support:</b> a weekly deal review with Revfinery's leadership, coaching before important calls, and full access to Revfinery's AI sales trainer.</li>
-    <li><b>Who it suits:</b> BDRs ready for their first closing role, and early-career sellers who want to move into full-cycle sales.</li>
-   </ul></details>
-   <p class="pick">Choose your hours to apply</p>
-   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/cohort/?role=Account%20Executive%2C%20Cohort%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/cohort/?role=Account%20Executive%2C%20Cohort%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/cohort/?role=Account%20Executive%2C%20Cohort%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
-  </article>
-
-  <article class="role multi" data-group="rev" data-level="field" data-type="ae" data-s="open" style="--bar:#0c6b73">
-   <div class="top"><div><h2>Account Executive, Field level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
-   <p class="sum">Run sales meetings and close deals for Revfinery's clients, with commission on every deal you close.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>1 to 5 years in a paid sales role, with B2B closing experience</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$35 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
-    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
-    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
-    <li><b>What you'll do:</b> run discovery calls and demos from the meetings your BDR books, write proposals, follow up and close.</li>
-    <li><b>What you own:</b> your pipeline and forecast, kept current in the client's CRM.</li>
-    <li><b>How you're measured:</b> on the KPIs and revenue targets agreed with the client at kickoff.</li>
-    <li><b>Support:</b> weekly deal reviews with Revfinery's leadership, plus full access to Revfinery's AI sales trainer.</li>
-    <li><b>Who it suits:</b> proven B2B sellers who can run a full sales cycle on their own.</li>
-   </ul></details>
-   <p class="pick">Choose your hours to apply</p>
-   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Field%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Field%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Field%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
-  </article>
-
-  <article class="role multi" data-group="rev" data-level="bench" data-type="ae" data-s="open" style="--bar:#f25025">
-   <div class="top"><div><h2>Account Executive, Bench level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
-   <p class="sum">Close larger and more complex deals for Revfinery's clients as a senior seller.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>5 or more years of B2B closing experience, including complex or enterprise deals</dd></div><div><dt>Hours you can choose</dt><dd>Below 20 (7 to 10), part-time (20 to 25) or full-time (35 to 40) a week</dd></div><div><dt>When you're needed</dt><dd>Business hours, on a schedule that fits the hours you pick</dd></div><div><dt>Pay</dt><dd>$65 an hour, plus half of the commission on every deal you close</dd></div><div><dt>Level</dt><dd>Bench</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
-    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
-    <li><b>Schedule:</b> below 20 hours is your own schedule within business hours, part-time is a set weekday block, and full-time is Monday to Friday.</li>
-    <li><b>What you'll do:</b> own the client's largest opportunities from discovery through negotiation and close, working with several decision makers on each deal.</li>
-    <li><b>What you own:</b> your pipeline and forecast, and the sales approach for the accounts you work.</li>
-    <li><b>How you're measured:</b> on the KPIs and revenue targets agreed with the client at kickoff.</li>
-    <li><b>Support:</b> direct access to Revfinery's leadership on deal strategy, plus full access to Revfinery's AI sales trainer.</li>
-    <li><b>Who it suits:</b> senior sellers with a long closing record who want flexible, high-level work.</li>
-   </ul></details>
-   <p class="pick">Choose your hours to apply</p>
-   <div class="hours"><a class="btn" data-commit="low" data-min="7" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Bench%20level%2C%207-10%20hours%2C%20Revfinery">Below 20 hours</a><a class="btn" data-commit="part" data-min="20" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Bench%20level%2C%2020-25%20hours%2C%20Revfinery">Part-time</a><a class="btn" data-commit="full" data-min="35" href="https://revfinery-apply.vercel.app/network/?role=Account%20Executive%2C%20Bench%20level%2C%2035-40%20hours%2C%20Revfinery">Full-time</a></div>
-  </article>
-
-  <article class="role" data-group="rev" data-level="bench" data-type="lead" data-commit="low" data-min="7" data-s="open" style="--bar:#f25025">
-   <div class="top"><div><h2>Sales Leader, Bench level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
-   <p class="sum">Lead strategy and coaching for a client's Revfinery sales team for a few hours each week.</p>
-   <dl class="facts"><div><dt>Openings</dt><dd>Ongoing, as client teams start</dd></div><div><dt>Experience required</dt><dd>7 or more years in B2B sales, including leading or coaching a team</dd></div><div><dt>Hours required</dt><dd>7 to 10 a week</dd></div><div><dt>When you're needed</dt><dd>Flexible, with a weekly team review and a client check-in during business hours</dd></div><div><dt>Pay</dt><dd>$100 an hour</dd></div><div><dt>Level</dt><dd>Bench</dd></div></dl>
-   <details><summary>Read the job description</summary><ul>
-    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
-    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs a sales leader, we contact you first.</li>
-    <li><b>What you'll do:</b> coach the BDR and account executive on live deals, review their calls and set the plan for each week.</li>
-    <li><b>What you own:</b> the KPIs and revenue targets agreed with the client, the forecast, and the decision on when to change training, target customers, tools or the sales approach.</li>
-    <li><b>Who you'll work with:</b> a Revfinery project manager who handles reporting and day-to-day coordination.</li>
-    <li><b>Who it suits:</b> experienced sales leaders who want part-time leadership work alongside their other commitments.</li>
-   </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Sales%20Leader%2C%20Bench%20level%2C%207-10%20hours%2C%20Revfinery">I'm interested</a>
-  </article>
-
-  <article class="role" data-group="rev" data-level="field" data-type="pm" data-commit="low part" data-min="10" data-s="open" style="--bar:#0c6b73">
-   <div class="top"><div><h2>Project Manager, part-time</h2><p class="client">Revfinery, internal role</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Open</span></span></div>
+  <article class="role" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Project Manager, part-time</h2><p class="client">Revfinery, internal role</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Hiring now</span></span></div>
    <p class="sum">Keep Revfinery's client projects, consultants and Cohort sellers on track.</p>
    <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>2 or more years coordinating projects or teams. Sales or consulting exposure is a plus.</dd></div><div><dt>Hours required</dt><dd>About 10 to 15 a week</dd></div><div><dt>When you're needed</dt><dd>Flexible, with a few set check-ins during business hours each week</dd></div><div><dt>Pay</dt><dd>Hourly, shared at interview</dd></div><div><dt>Level</dt><dd>Field</dd></div></dl>
    <details><summary>Read the job description</summary><ul>
@@ -319,56 +150,106 @@ details li{margin-bottom:8px}
     <li><b>Support:</b> you report directly to Revfinery's founder.</li>
     <li><b>Who it suits:</b> an organized communicator who is comfortable holding people to deadlines.</li>
    </ul></details>
-   <a class="btn" href="https://revfinery-apply.vercel.app/network/?role=Project%20Manager%2C%20part-time%2C%20Revfinery">I'm interested</a>
+   <a class="btn" href="/network/?role=Project%20Manager%2C%20part-time%2C%20Revfinery&level=Field&type=Project%20Manager&hours=10-15">Apply now</a>
+  </article>
+  <h2 class="sec">Starting soon</h2>
+  <p class="secnote">These roles begin when the client engagement starts.</p>
+
+  <article class="role" style="--bar:#f25025">
+   <div class="top"><div><h2>Sales team for a global B2B marketplace</h2><p class="client">US partner program, six seats across three roles</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Starting soon</span></span></div>
+   <p class="sum">We're building a full-time team to sign up US suppliers for one of the world's largest B2B marketplaces. Apply now for the role that fits you and you'll be first in line when the team starts.</p>
+   <dl class="facts"><div><dt>Hours required</dt><dd>About 40 a week, full-time</dd></div><div><dt>When you're needed</dt><dd>Monday to Friday, regular business hours</dd></div><div><dt>Location</dt><dd>Remote. Must be based in the US.</dd></div></dl>
+   <section class="sub"><h3>Account Executive</h3><dl class="facts"><div><dt>Openings</dt><dd>4 seats</dd></div><div><dt>Experience required</dt><dd>2 to 5 years of consultative B2B subscription, SaaS or marketplace sales. Must be based in the US.</dd></div><div><dt>Pay</dt><dd>$50,000 to $75,000 base, with on-target earnings of $80,000 to $115,000, depending on experience</dd></div></dl><details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
+    <li><b>What you'll do:</b> own each supplier from first contact through discovery, proposal, close and registration. You work an assigned pool of leads and add your own prospecting.</li>
+    <li><b>After the sale:</b> you keep your accounts and help each supplier with onboarding, advertising, upgrades and renewal.</li>
+    <li><b>Support:</b> you're part of a Revfinery-managed team with a team lead and weekly call reviews, and the client provides product training and a playbook.</li>
+    <li><b>What you'll learn:</b> how to run a full sales cycle at volume and grow a book of accounts you own.</li>
+    <li><b>Who it suits:</b> sellers with closing experience in subscription, SaaS or marketplace sales who know the US supplier market.</li>
+   </ul></details>
+   <a class="btn" href="/network/?role=Account%20Executive%2C%20global%20B2B%20marketplace&level=Field&type=Account%20Executive&hours=40">Apply now</a></section>
+   <section class="sub"><h3>Business Development Representative</h3><dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Open to graduating seniors and new graduates. Must be based in the US.</dd></div><div><dt>Pay</dt><dd>$40,000 to $55,000 base, with on-target earnings of $55,000 to $70,000, depending on experience</dd></div></dl><details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
+    <li><b>What you'll do:</b> prospect new supplier accounts by phone and email, qualify them against set criteria and book meetings for the account executives.</li>
+    <li><b>Schedule:</b> full-time, Monday to Friday, during regular business hours.</li>
+    <li><b>Support:</b> you're part of a Revfinery-managed team with a team lead and weekly call reviews.</li>
+    <li><b>What you'll learn:</b> how to build a target list, open a conversation and qualify a buyer, with a path to an AE seat for strong performers.</li>
+    <li><b>Who it suits:</b> graduating seniors and new graduates who want full-time experience with a well-known global company.</li>
+   </ul></details>
+   <a class="btn" href="/cohort/?role=BDR%2C%20global%20B2B%20marketplace&level=Cohort&type=BDR&hours=40">Apply now</a></section>
+   <section class="sub"><h3>Sales Team Lead</h3><dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>5 or more years, including coaching or leading other sellers. Must be based in the US.</dd></div><div><dt>Pay</dt><dd>$65,000 to $90,000 base, with on-target earnings of $95,000 to $130,000, depending on experience</dd></div></dl><details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a global B2B marketplace bringing US manufacturers, wholesalers, distributors and e-commerce brands onto its platform through its partner program.</li>
+    <li><b>What you'll do:</b> manage a team of four account executives and one BDR day to day, review their calls every week and run the forecast.</li>
+    <li><b>What you own:</b> the team's activity, pipeline and results, the weekly business review with the client, and renewals and account growth across the team's suppliers.</li>
+    <li><b>Support:</b> you work directly with Revfinery's leadership on coaching and strategy.</li>
+    <li><b>What you'll learn:</b> how to run a sales team for a global brand, with a results record you can point to.</li>
+    <li><b>Who it suits:</b> sellers with five or more years of closing experience who have coached or led others.</li>
+   </ul></details>
+   <a class="btn" href="/bench/?role=Sales%20Team%20Lead%2C%20global%20B2B%20marketplace&level=Bench&type=Sales%20Leader&hours=40">Apply now</a></section>
   </article>
 
-  <p class="note">Roles marked "Opening soon" start once the client engagement begins, and pay shown for those roles is an expected range confirmed at offer. Revfinery roles placed on client sales teams are always open, your start date depends on when a client team needs your level and hours, and pay is confirmed at offer. Apply now and we'll contact you first.</p>
+  <article class="role" style="--bar:#e8a020">
+   <div class="top"><div><h2>Business Development Representative, part-time</h2><p class="client">Cybersecurity and AI consulting firm expanding into the US</p></div><span class="pills"><span class="remote">Remote</span><span class="status soon">Starting soon</span></span></div>
+   <p class="sum">Help a technical consulting firm open the US market, working directly with Revfinery's president.</p>
+   <dl class="facts"><div><dt>Openings</dt><dd>1 seat</dd></div><div><dt>Experience required</dt><dd>Less than 1 year. Cybersecurity or technology coursework preferred.</dd></div><div><dt>Hours required</dt><dd>5 to 8 a week</dd></div><div><dt>When you're needed</dt><dd>Your own schedule, with calls in business hours and a 30-minute coaching session each week</dd></div><div><dt>Pay</dt><dd>$400 a month, plus $50 per qualified meeting and $250 per closed deal</dd></div><div><dt>Level</dt><dd>Cohort</dd></div></dl>
+   <details><summary>Read the job description</summary><ul>
+    <li><b>The company:</b> a consulting firm that delivers cybersecurity, AI and custom software projects, and is building its first US sales channel.</li>
+    <li><b>What you'll do:</b> research target companies, then reach security and IT leaders by email, LinkedIn and phone to book qualified meetings.</li>
+    <li><b>How you're measured:</b> on weekly activity targets, not hours. You choose when to work, with calls made during business hours.</li>
+    <li><b>Support:</b> a weekly coaching session with Revfinery's president, who runs every meeting you book.</li>
+    <li><b>What you'll learn:</b> how to build a target list, write outreach that gets replies and sell a technical service.</li>
+    <li><b>Who it suits:</b> students with a cybersecurity or technology background are preferred.</li>
+   </ul></details>
+   <a class="btn" href="/cohort/?role=BDR%2C%20part-time%2C%20cybersecurity%20and%20AI%20consulting%20firm&level=Cohort&type=BDR&hours=5-8">Apply now</a>
+  </article>
+  <h2 class="sec">Join the Talent Network</h2>
+  <p class="secnote">If none of the roles above fit, apply once at your level. There is no set start date, and members hear first when a client team needs them.</p>
+
+  <article class="role" style="--bar:#e8a020">
+   <div class="top"><div><h2>Talent Network, Cohort level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Always open</span></span></div>
+   <p class="sum">Start your sales career on Revfinery's own team, with coaching built into every week.</p>
+   <dl class="facts"><div><dt>Experience</dt><dd>Under 3 years in sales. No prior sales job needed.</dd></div><div><dt>Roles</dt><dd>BDR and junior Account Executive</dd></div><div><dt>Hours</dt><dd>You choose 7 to 10, 20 to 25 or 35 to 40 a week</dd></div><div><dt>Pay</dt><dd>$20 to $28 an hour, plus a bonus for each meeting held or a share of commission</dd></div><div><dt>Start date</dt><dd>When a client team needs your level and hours</dd></div></dl>
+   <details><summary>Read how it works</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>What you'll do:</b> research target accounts, reach buyers by phone, email and LinkedIn, and book qualified meetings. Junior account executives run meetings and close smaller deals.</li>
+    <li><b>How you're measured:</b> on the KPIs agreed with the client, which are reviewed with you every week.</li>
+    <li><b>Support:</b> weekly call or deal reviews and coaching, plus full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> students, new graduates and career changers who want paid sales experience.</li>
+   </ul></details>
+   <a class="btn" href="/cohort/?role=Talent%20Network%2C%20Cohort%20level&level=Cohort&type=Talent%20Network&hours=">Apply now</a>
+  </article>
+
+  <article class="role" style="--bar:#0c6b73">
+   <div class="top"><div><h2>Talent Network, Field level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Always open</span></span></div>
+   <p class="sum">Bring your prospecting or closing experience to Revfinery's client teams and get to work with less ramp time.</p>
+   <dl class="facts"><div><dt>Experience</dt><dd>3 to 6 years in a paid sales role</dd></div><div><dt>Roles</dt><dd>BDR and Account Executive</dd></div><div><dt>Hours</dt><dd>You choose 7 to 10, 20 to 25 or 35 to 40 a week</dd></div><div><dt>Pay</dt><dd>$25 to $35 an hour, plus a bonus for each meeting held or half of the commission on deals you close</dd></div><div><dt>Start date</dt><dd>When a client team needs your level and hours</dd></div></dl>
+   <details><summary>Read how it works</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>What you'll do:</b> build and work a target list and book qualified meetings, or run discovery calls, write proposals and close deals from the meetings your BDR books.</li>
+    <li><b>How you're measured:</b> on the KPIs agreed with the client, which are reviewed with you every week.</li>
+    <li><b>Support:</b> weekly call or deal reviews and coaching, plus full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> working sellers who can run their own outreach or a full sales cycle with light direction.</li>
+   </ul></details>
+   <a class="btn" href="/network/?role=Talent%20Network%2C%20Field%20level&level=Field&type=Talent%20Network&hours=">Apply now</a>
+  </article>
+
+  <article class="role" style="--bar:#f25025">
+   <div class="top"><div><h2>Talent Network, Bench level</h2><p class="client">Revfinery, placed on client sales teams</p></div><span class="pills"><span class="remote">Remote</span><span class="status">Always open</span></span></div>
+   <p class="sum">Close larger deals or lead a client's sales team as a senior member of Revfinery's bench.</p>
+   <dl class="facts"><div><dt>Experience</dt><dd>7 or more years in B2B sales</dd></div><div><dt>Roles</dt><dd>Senior Account Executive and Sales Leader</dd></div><div><dt>Hours</dt><dd>From 7 to 40 a week, depending on the role</dd></div><div><dt>Pay</dt><dd>$65 to $100 an hour, plus half of the commission on deals you close in selling roles</dd></div><div><dt>Start date</dt><dd>When a client team needs your level and hours</dd></div></dl>
+   <details><summary>Read how it works</summary><ul>
+    <li><b>The company:</b> Revfinery, a B2B sales firm that staffs, trains and manages sales teams for its clients. You work for Revfinery and are placed on a client's team.</li>
+    <li><b>How it works:</b> you apply once and join our Talent Network. When a client team needs your level and hours, we contact you first.</li>
+    <li><b>What you'll do:</b> own a client's largest opportunities from discovery to close, or coach the team, review calls and set the plan each week as its sales leader.</li>
+    <li><b>How you're measured:</b> on the KPIs agreed with the client, which are reviewed with you every week.</li>
+    <li><b>Support:</b> weekly call or deal reviews and coaching, plus full access to Revfinery's AI sales trainer.</li>
+    <li><b>Who it suits:</b> senior sellers and sales leaders who want flexible, high-level work.</li>
+   </ul></details>
+   <a class="btn" href="/bench/?role=Talent%20Network%2C%20Bench%20level&level=Bench&type=Talent%20Network&hours=">Apply now</a>
+  </article>
  </div>
 </main>
-
-<script>
-(function(){
- var roles=[].slice.call(document.querySelectorAll('.role')),
-     ft=document.getElementById('f-type'),fc=document.getElementById('f-commit'),fh=document.getElementById('f-hours'),fs=document.getElementById('f-status'),fl=document.getElementById('f-level'),
-     count=document.getElementById('count'),reset=document.getElementById('reset'),empty=document.getElementById('empty'),
-     tabs=[].slice.call(document.querySelectorAll('.tabs button')),tabnote=document.getElementById('tabnote'),tab='client';
- var NOTES={client:'Specific openings with companies we work with. Each one has a set team, schedule and start.',
-            rev:'Join Revfinery\'s own team. You apply once, and we place you on a client team when one needs your level and hours.'};
- function fits(el,c,h){
-  return (c==='all'||el.getAttribute('data-commit').split(' ').indexOf(c)>-1)&&(parseInt(el.getAttribute('data-min'),10)<=h);
- }
- function apply(){
-  var t=ft.value,c=fc.value,h=parseInt(fh.value,10),st=fs.value,lv=fl.value,n=0,total=0,per={client:0,rev:0};
-  roles.forEach(function(r){
-   var g=r.getAttribute('data-group');var sd=r.querySelector('.facts dd'),sm=sd?/^(\d+)/.exec(sd.textContent):null;per[g]+=r.classList.contains('multi')?r.querySelectorAll('.hours .btn').length:(sm?parseInt(sm[1],10):1);
-   var ok=(t==='all'||r.getAttribute('data-type')===t)
-     &&(st==='all'||r.getAttribute('data-s')===st)
-     &&(lv==='all'||r.getAttribute('data-level').split(' ').indexOf(lv)>-1);
-   if(r.classList.contains('multi')){
-    var any=false;
-    [].forEach.call(r.querySelectorAll('.hours .btn'),function(b){var f=fits(b,c,h);b.hidden=!f;if(f)any=true;});
-    ok=ok&&any;
-   }else{ok=ok&&fits(r,c,h);}
-   if(g===tab){total++;if(ok)n++;}
-   r.hidden=!(ok&&g===tab);
-  });
-  document.getElementById('n-client').textContent='('+per.client+' openings)';
-  document.getElementById('n-rev').textContent='('+per.rev+' openings)';
-  document.getElementById('total').textContent=per.client+per.rev;
-  count.textContent='Showing '+n+' of '+total+' roles';
-  tabnote.textContent=NOTES[tab];
-  empty.hidden=n>0;
-  reset.hidden=(t==='all'&&c==='all'&&fh.value==='99'&&st==='all'&&lv==='all');
- }
- tabs.forEach(function(b){b.addEventListener('click',function(){
-  tab=b.getAttribute('data-tab');
-  tabs.forEach(function(x){x.setAttribute('aria-selected',String(x===b));});
-  apply();
- });});
- [ft,fc,fh,fs,fl].forEach(function(el){el.addEventListener('change',apply)});
- reset.addEventListener('click',function(){ft.value='all';fc.value='all';fh.value='99';fs.value='all';fl.value='all';apply()});
- apply();
-})();
-</script>
 </body>
 </html>
