@@ -1,193 +1,221 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { ArrowLeft, ArrowRight, Check, CheckCircle, Award } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 
-const HUBSPOT_PORTAL_ID = '244430724';
-const HUBSPOT_FORM_ID = '4d4e2afd-64de-4ed9-bd9b-57b6162ad4d0';
+// One HubSpot form receives all three applications. The level is saved on every applicant.
+const PORTAL_ID = '244430724';
+const FORM_ID = '00fbf759-567b-4840-9222-7543849bbf80';
+const JSON_HOSTS = ['api.hsforms.com', 'api-na2.hsforms.com'];
+const UPLOAD_HOSTS = ['forms-na2.hubspot.com', 'forms.hubspot.com'];
 
-const INDUSTRIES = [
-  'SaaS / Software', 'Healthcare / Life Sciences', 'Financial Services', 
-  'Manufacturing', 'Retail / E-commerce', 'Professional Services',
-  'Media / Entertainment', 'Real Estate', 'Education', 'Other'
-];
+const LEVEL = 'Field';
+const ACCENT = '#f25025';
+const ACCENT_TEXT = '#ffffff';
+const ACCENT_SOFT = '#fff1ec';
+const LINKEDIN_REQUIRED = true;
 
-const YEARS_OPTIONS = ['Less than 1 year', '1-3 years', '3-5 years', '5+ years'];
-const DEAL_SIZE_OPTIONS = ['Under $10K', '$10K - $50K', '$50K - $100K', '$100K+', 'Not applicable'];
-const HOURS_OPTIONS = ['Up to 10', '10 to 20', '20 to 30', 'Full-time'];
-const HEARD_FROM_OPTIONS = ['LinkedIn', 'Referral from a friend', 'Google search', 'Revfinery website', 'Social media', 'Skills Assessment', 'Other'];
+const STATES = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'Outside the US'];
+const TIME_BLOCKS = ['Weekday mornings', 'Weekday afternoons', 'Weekday evenings', 'Weekends'];
+const WORK_OPTIONS = ['Booking meetings (BDR)', 'Closing deals (Account Executive)', 'Leading a team'];
+const TYPE_TO_WORK = { 'BDR': 'Booking meetings (BDR)', 'Account Executive': 'Closing deals (Account Executive)', 'Sales Leader': 'Leading a team' };
 
-export default function TalentNetwork() {
-  const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  
-  // Assessment data from URL
-  const [fromAssessment, setFromAssessment] = useState(false);
-  const [assessmentScore, setAssessmentScore] = useState('');
-  const [assessmentTier, setAssessmentTier] = useState('');
-  const [assessmentBlocker, setAssessmentBlocker] = useState('');
+const MAX_RESUME_MB = 5;
 
-  // Role from the job board link (?role=...)
+const labelStyle = { display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d' };
+const inputStyle = { width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box', backgroundColor: 'white', color: '#0e2a2d', fontFamily: 'inherit' };
+const hintStyle = { fontSize: '13px', color: '#6b7d80', margin: '6px 0 0' };
+const groupStyle = { marginBottom: '18px' };
+
+const onlyNumber = (value) => String(value).replace(/[^0-9.]/g, '');
+
+function Chips({ options, selected, onToggle }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      {options.map((option) => {
+        const active = selected.includes(option);
+        return (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onToggle(option)}
+            style={{ padding: '10px 16px', border: active ? `2px solid ${ACCENT}` : '2px solid #eaf6f7', borderRadius: '20px', backgroundColor: active ? ACCENT_SOFT : 'white', cursor: 'pointer', fontSize: '14px', color: '#0e2a2d', fontWeight: active ? '700' : '500', fontFamily: 'inherit' }}
+          >
+            {option}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function Application() {
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
   const [role, setRole] = useState('');
-
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    linkedin: '',
-    city: '',
-    yearsInSales: '',
-    currentRole: '',
-    industries: [],
-    typicalDealSize: '',
-    hoursAvailable: '',
-    workInterests: '',
-    lookingFor: '',
-    takenAssessment: '',
-    assessmentScore: '',
-    heardFrom: '',
-    message: ''
+  const [roleType, setRoleType] = useState('');
+  const [roleHours, setRoleHours] = useState('');
+  const [resume, setResume] = useState(null);
+  const [resumeError, setResumeError] = useState('');
+  const [f, setF] = useState({
+    firstName: '', lastName: '', email: '', phone: '', linkedin: '', state: '',
+    hours: '', timeBlocks: [], workInterests: [],
+    years: '', currentRole: '', whatSold: '', dealSize: '', quota: '', attainment: ''
   });
 
-  // Read URL parameters on mount
+  const totalSteps = 3;
+  const isPM = roleType === 'Project Manager';
+
+  // The job board button passes the role in the link, for example ?role=...&type=BDR&hours=40
   useEffect(() => {
-    if (router.isReady) {
-      const { score, tier, blocker, email, firstName, lastName, role: roleParam } = router.query;
-      if (roleParam) {
-        setRole(String(roleParam));
-      }
-      if (score) {
-        setFromAssessment(true);
-        setAssessmentScore(score);
-        setAssessmentTier(tier || '');
-        setAssessmentBlocker(blocker || '');
-        setFormData(prev => ({
-          ...prev,
-          firstName: firstName || prev.firstName,
-          lastName: lastName || prev.lastName,
-          email: email || prev.email,
-          takenAssessment: 'Yes',
-          assessmentScore: score,
-          heardFrom: 'Skills Assessment'
-        }));
-      }
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type') || '';
+    setRole(params.get('role') || '');
+    setRoleType(type);
+    setRoleHours(params.get('hours') || '');
+    if (TYPE_TO_WORK[type] && WORK_OPTIONS.includes(TYPE_TO_WORK[type])) {
+      setF((prev) => ({ ...prev, workInterests: [TYPE_TO_WORK[type]] }));
     }
-  }, [router.isReady, router.query]);
+  }, []);
 
-  const totalSteps = 4;
+  const set = (field, value) => setF((prev) => ({ ...prev, [field]: value }));
+  const toggle = (field, value, max) => setF((prev) => {
+    const list = prev[field];
+    if (list.includes(value)) return { ...prev, [field]: list.filter((item) => item !== value) };
+    if (max && list.length >= max) return prev;
+    return { ...prev, [field]: [...list, value] };
+  });
 
-  const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const toggleIndustry = (industry) => {
-    setFormData(prev => ({
-      ...prev,
-      industries: prev.industries.includes(industry)
-        ? prev.industries.filter(i => i !== industry)
-        : [...prev.industries, industry]
-    }));
+  const chooseResume = (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (file.size > MAX_RESUME_MB * 1024 * 1024) {
+      setResume(null);
+      setResumeError(`That file is larger than ${MAX_RESUME_MB} MB. Please choose a smaller one.`);
+      return;
+    }
+    setResumeError('');
+    setResume(file);
   };
 
   const canProceed = () => {
-    switch (currentStep) {
-      case 1:
-        return formData.firstName && formData.lastName && formData.email && formData.email.includes('@');
-      case 2:
-        return formData.yearsInSales && formData.industries.length > 0;
-      case 3:
-        return formData.typicalDealSize;
-      case 4:
-        return fromAssessment || formData.heardFrom;
-      default:
-        return false;
+    if (step === 1) {
+      return Boolean(f.firstName && f.lastName && f.email.includes('@') && f.phone && f.state && (!LINKEDIN_REQUIRED || f.linkedin));
     }
+    if (step === 2) {
+      return Boolean(f.years !== '' && f.currentRole && (isPM || (f.whatSold && f.dealSize && f.quota && f.attainment)));
+    }
+    return Boolean(f.hours && f.timeBlocks.length > 0 && f.workInterests.length > 0 && resume);
   };
 
-  const submitToHubSpot = async () => {
-    setIsSubmitting(true);
+  const submit = async () => {
+    setSubmitting(true);
+    setError('');
 
-    // Role and hours are added to the message so they reach HubSpot without needing new properties
-    const notes = [
-      role ? `Interested in: ${role}` : '',
-      formData.hoursAvailable ? `Hours available a week: ${formData.hoursAvailable}` : '',
-      formData.message
-    ].filter(Boolean).join(' | ');
+    const core = [
+      ['firstname', f.firstName.trim()],
+      ['lastname', f.lastName.trim()],
+      ['email', f.email.trim()],
+      ['phone', f.phone.trim()],
+      ['hs_linkedin_url', f.linkedin.trim()],
+      ['state', f.state],
+      ['role_applied_for', role || `Talent Network, ${LEVEL} level`],
+      ['application_level', LEVEL],
+      ['role_type', roleType || 'Talent Network'],
+      ['application_status', 'Reviewing'],
+      ['weekday_availability', f.timeBlocks.join(', ')],
+      ['work_interests', f.workInterests.join(', ')]
+    ];
+    const answers = [
+      ['applicant_hours_per_week', f.hours],
+      ['applicant_years_of_experience', f.years],
+      ['current_role', f.currentRole.trim()],
+      ['what_you_sold', f.whatSold.trim()],
+      ['applicant_average_deal_size', isPM ? '' : f.dealSize],
+      ['applicant_annual_quota', isPM ? '' : f.quota],
+      ['applicant_quota_percent', isPM ? '' : f.attainment]
+    ];
 
-    const data = {
-      fields: [
-        { name: 'firstname', value: formData.firstName },
-        { name: 'lastname', value: formData.lastName },
-        { name: 'email', value: formData.email },
-        { name: 'linkedin_url', value: formData.linkedin },
-        { name: 'city', value: formData.city },
-        { name: 'years_in_sales_network', value: formData.yearsInSales },
-        { name: 'current_role', value: formData.currentRole },
-        { name: 'industries', value: formData.industries.join(', ') },
-        { name: 'typical_deal_size', value: formData.typicalDealSize },
-        { name: 'work_interests', value: formData.workInterests },
-        { name: 'looking_for', value: formData.lookingFor },
-        { name: 'taken_assessment', value: formData.takenAssessment },
-        { name: 'assessment_score', value: formData.assessmentScore },
-        { name: 'heard_from', value: formData.heardFrom },
-        { name: 'message', value: notes },
-        { name: 'application_type', value: 'The Field' }
-      ],
-      context: {
-        pageUri: window.location.href,
-        pageName: 'Talent Network Application'
-      }
-    };
+    const toFields = (pairs) => pairs
+      .filter((pair) => pair[1] !== '' && pair[1] !== null && pair[1] !== undefined)
+      .map((pair) => ({ name: pair[0], value: String(pair[1]) }));
+    const context = { pageUri: window.location.href, pageName: `${LEVEL} Application` };
+    const summary = toFields(answers).map((field) => `${field.name}: ${field.value}`).join(' | ');
 
-    try {
-      const response = await fetch(
-        `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+    // First try sends every answer to its own property. If HubSpot rejects one,
+    // the second try keeps the application by saving the answers in the message.
+    const payloads = [
+      { fields: toFields(core.concat(answers)), context },
+      { fields: toFields(core.concat([['message', summary]])), context }
+    ];
+
+    let saved = false;
+    for (const payload of payloads) {
+      for (const host of JSON_HOSTS) {
+        try {
+          const response = await fetch(`https://${host}/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_ID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (response.ok) { saved = true; break; }
+          console.error('HubSpot error:', await response.text());
+        } catch (err) {
+          console.error('Submission error:', err);
         }
-      );
-
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        const errorData = await response.json();
-        console.error('HubSpot error:', errorData);
-        alert('There was an error submitting your application. Please try again.');
       }
-    } catch (error) {
-      console.error('Submission error:', error);
-      alert('There was an error submitting your application. Please try again.');
+      if (saved) break;
     }
 
-    setIsSubmitting(false);
+    if (!saved) {
+      setError('We could not send your application. Please check your connection and try again.');
+      setSubmitting(false);
+      return;
+    }
+
+    // The resume goes in a second call, because the first one cannot carry a file.
+    if (resume) {
+      for (const host of UPLOAD_HOSTS) {
+        try {
+          const body = new FormData();
+          body.append('email', f.email.trim());
+          body.append('resume', resume, resume.name);
+          body.append('hs_context', JSON.stringify({ pageUrl: window.location.href, pageName: `${LEVEL} Application` }));
+          await fetch(`https://${host}/uploads/form/v2/${PORTAL_ID}/${FORM_ID}`, { method: 'POST', mode: 'no-cors', body });
+          break;
+        } catch (err) {
+          console.error('Resume upload error:', err);
+        }
+      }
+    }
+
+    setSubmitted(true);
+    setSubmitting(false);
   };
 
-  if (isSubmitted) {
+  const pageStyle = { minHeight: '100vh', background: 'linear-gradient(135deg, #fff7e8 0%, #fbf6f1 50%, #eaf6f7 100%)', padding: '24px 16px', fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif' };
+
+  if (submitted) {
     return (
       <>
         <Head>
-          <title>Application Submitted | The Field | Revfinery</title>
+          <title>Application received | Revfinery Talent Network</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
         </Head>
-        <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #fbf6f1 0%, #fff7e8 50%, #eaf6f7 100%)', padding: '24px'}}>
-          <div style={{maxWidth: '480px', width: '100%', textAlign: 'center', padding: '48px 32px', backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)'}}>
-            <div style={{width: '80px', height: '80px', margin: '0 auto 24px', borderRadius: '50%', backgroundColor: '#0c6b73', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <CheckCircle style={{width: '40px', height: '40px', color: 'white'}} />
+        <div style={{ ...pageStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ maxWidth: '480px', width: '100%', textAlign: 'center', padding: '48px 28px', backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+            <div style={{ width: '72px', height: '72px', margin: '0 auto 20px', borderRadius: '50%', backgroundColor: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle style={{ width: '36px', height: '36px', color: ACCENT_TEXT }} />
             </div>
-            <h1 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#0e2a2d'}}>Application Received!</h1>
-            <p style={{fontSize: '16px', color: '#4c5f62', marginBottom: '32px'}}>
-              Thanks for applying to the Field. We'll review your application and be in touch soon.
+            <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 12px', color: '#0e2a2d' }}>Application received</h1>
+            <p style={{ color: '#4c5f62', margin: '0 0 24px', lineHeight: '1.6' }}>
+              Thanks for applying{role ? ` for ${role}` : ''}. We review applications every week and will email you about next steps.
             </p>
-            <a href="/roles/" style={{display: 'inline-block', padding: '14px 28px', backgroundColor: '#f25025', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', marginBottom: '12px'}}>
-              See open roles
-            </a>
+            <a href="/roles/" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#f25025', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', marginBottom: '12px' }}>See open roles</a>
             <br />
-            <a href="https://www.revfinery.com" style={{display: 'inline-block', padding: '14px 28px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600'}}>
-              Back to Revfinery
-            </a>
+            <a href="https://www.revfinery.com/talent-network" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#0c6b73', color: 'white', borderRadius: '12px', textDecoration: 'none', fontWeight: '600' }}>Back to Talent Network</a>
           </div>
         </div>
       </>
@@ -197,332 +225,172 @@ export default function TalentNetwork() {
   return (
     <>
       <Head>
-        <title>Apply to the Field | Revfinery</title>
+        <title>Apply to the Field | Revfinery Talent Network</title>
+        <meta name="description" content="For working sellers with 3 to 6 years of sales experience." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
       </Head>
-      <div style={{minHeight: '100vh', background: 'linear-gradient(135deg, #fbf6f1 0%, #fff7e8 50%, #eaf6f7 100%)'}}>
-        {/* Header */}
-        <div style={{padding: '16px 24px', borderBottom: '1px solid rgba(0,0,0,0.08)', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-          <a href="https://www.revfinery.com" style={{display: 'flex', alignItems: 'center', color: '#4c5f62', textDecoration: 'none', fontWeight: '600', fontSize: '15px'}}>
-            <ArrowLeft style={{width: '18px', height: '18px', marginRight: '8px'}} />
-            Back to Revfinery
-          </a>
-          <span style={{fontWeight: 'bold', fontSize: '18px', color: '#0c6b73'}}>Revfinery</span>
-        </div>
 
-        <div style={{maxWidth: '640px', margin: '0 auto', padding: '40px 24px'}}>
-          {/* Title Section */}
-          <div style={{textAlign: 'center', marginBottom: '32px'}}>
-            <span style={{display: 'inline-block', padding: '8px 16px', marginBottom: '12px', fontWeight: 'bold', fontSize: '13px', backgroundColor: '#f25025', color: 'white', borderRadius: '20px'}}>
-              THE FIELD
-            </span>
-            <h1 style={{fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#0e2a2d'}}>Join the Field</h1>
-            <p style={{color: '#4c5f62'}}>Get matched to BDR and AE roles that fit your experience</p>
+      <div style={pageStyle}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
 
-            {/* Show the role they came from on the job board */}
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <a href="/roles/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#4c5f62', textDecoration: 'none', fontSize: '14px', marginBottom: '16px' }}>
+              <ArrowLeft size={16} />
+              Back to open roles
+            </a>
+            <div>
+              <span style={{ display: 'inline-block', backgroundColor: ACCENT, color: ACCENT_TEXT, padding: '6px 14px', borderRadius: '20px', marginBottom: '12px', fontWeight: '700', fontSize: '13px' }}>{LEVEL} level</span>
+            </div>
+            <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e2a2d', margin: '0 0 8px' }}>Apply to the Field</h1>
+            <p style={{ color: '#4c5f62', margin: '0' }}>For working sellers with 3 to 6 years of sales experience.</p>
             {role && (
-              <div style={{display: 'inline-block', marginTop: '16px', padding: '10px 16px', backgroundColor: '#fff7e8', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0e2a2d'}}>
+              <p style={{ display: 'inline-block', margin: '14px 0 0', padding: '8px 14px', backgroundColor: '#eaf6f7', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0c6b73' }}>
                 You're applying for: {role}
-              </div>
-            )}
-            
-            {/* Show badge if from assessment */}
-            {fromAssessment && assessmentScore && (
-              <div style={{display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '16px', padding: '10px 16px', backgroundColor: '#eaf6f7', borderRadius: '12px', border: '2px solid #0c6b73'}}>
-                <Award style={{width: '20px', height: '20px', color: '#0c6b73'}} />
-                <span style={{fontWeight: '600', color: '#0c6b73'}}>Assessment Score: {assessmentScore}%</span>
-              </div>
+              </p>
             )}
           </div>
 
-          {/* Progress Bar */}
-          <div style={{marginBottom: '32px'}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px', fontWeight: '600'}}>
-              <span style={{color: '#0e2a2d'}}>Step {currentStep} of {totalSteps}</span>
-              <span style={{color: '#0c6b73'}}>{Math.round((currentStep / totalSteps) * 100)}%</span>
-            </div>
-            <div style={{height: '8px', backgroundColor: '#eaf6f7', borderRadius: '8px', overflow: 'hidden'}}>
-              <div style={{height: '100%', width: `${(currentStep / totalSteps) * 100}%`, backgroundColor: '#f25025', borderRadius: '8px', transition: 'width 0.3s'}} />
-            </div>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }} aria-hidden="true">
+            {[1, 2, 3].map((n) => (
+              <div key={n} style={{ flex: 1, height: '5px', borderRadius: '3px', backgroundColor: n <= step ? ACCENT : '#e5e7eb' }} />
+            ))}
           </div>
 
-          {/* Form Card */}
-          <div style={{backgroundColor: 'white', borderRadius: '24px', padding: '32px', boxShadow: '0 10px 40px rgba(0,0,0,0.08)'}}>
-            
-            {/* Step 1: Basic Info */}
-            {currentStep === 1 && (
+          <div style={{ backgroundColor: 'white', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', padding: '28px 22px' }}>
+
+            {step === 1 && (
               <div>
-                <h2 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#0e2a2d'}}>Let's start with the basics</h2>
-                
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px'}}>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 20px', color: '#0e2a2d' }}>About you</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
                   <div>
-                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>First Name *</label>
-                    <input
-                      type="text"
-                      value={formData.firstName}
-                      onChange={(e) => updateField('firstName', e.target.value)}
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                    />
+                    <label htmlFor="firstName" style={labelStyle}>First name *</label>
+                    <input id="firstName" type="text" autoComplete="given-name" value={f.firstName} onChange={(e) => set('firstName', e.target.value)} style={inputStyle} />
                   </div>
                   <div>
-                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Last Name *</label>
-                    <input
-                      type="text"
-                      value={formData.lastName}
-                      onChange={(e) => updateField('lastName', e.target.value)}
-                      style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                    />
+                    <label htmlFor="lastName" style={labelStyle}>Last name *</label>
+                    <input id="lastName" type="text" autoComplete="family-name" value={f.lastName} onChange={(e) => set('lastName', e.target.value)} style={inputStyle} />
                   </div>
                 </div>
-
-                <div style={{marginBottom: '16px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Email *</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => updateField('email', e.target.value)}
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                  />
+                <div style={groupStyle}>
+                  <label htmlFor="email" style={labelStyle}>Email *</label>
+                  <input id="email" type="email" autoComplete="email" value={f.email} onChange={(e) => set('email', e.target.value)} style={inputStyle} />
                 </div>
-
-                <div style={{marginBottom: '16px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>LinkedIn URL</label>
-                  <input
-                    type="url"
-                    value={formData.linkedin}
-                    onChange={(e) => updateField('linkedin', e.target.value)}
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                  />
+                <div style={groupStyle}>
+                  <label htmlFor="phone" style={labelStyle}>Phone *</label>
+                  <input id="phone" type="tel" autoComplete="tel" value={f.phone} onChange={(e) => set('phone', e.target.value)} style={inputStyle} />
                 </div>
-
+                <div style={groupStyle}>
+                  <label htmlFor="linkedin" style={labelStyle}>LinkedIn URL{LINKEDIN_REQUIRED ? ' *' : ''}</label>
+                  <input id="linkedin" type="url" value={f.linkedin} onChange={(e) => set('linkedin', e.target.value)} placeholder="linkedin.com/in/yourname" style={inputStyle} />
+                </div>
                 <div>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>City</label>
-                  <input
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => updateField('city', e.target.value)}
-                    placeholder="e.g., Atlanta, GA"
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                  />
+                  <label htmlFor="state" style={labelStyle}>State *</label>
+                  <select id="state" value={f.state} onChange={(e) => set('state', e.target.value)} style={inputStyle}>
+                    <option value="">Choose your state</option>
+                    {STATES.map((name) => <option key={name} value={name}>{name}</option>)}
+                  </select>
                 </div>
               </div>
             )}
 
-            {/* Step 2: Experience */}
-            {currentStep === 2 && (
+            {step === 2 && (
               <div>
-                <h2 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#0e2a2d'}}>Tell us about your experience</h2>
-                
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Years in Sales *</label>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
-                    {YEARS_OPTIONS.map(option => (
-                      <label key={option} style={{display: 'flex', alignItems: 'center', padding: '14px 16px', border: formData.yearsInSales === option ? '2px solid #f25025' : '2px solid #eaf6f7', borderRadius: '12px', cursor: 'pointer', backgroundColor: formData.yearsInSales === option ? '#fff7e8' : 'white'}}>
-                        <input
-                          type="radio"
-                          name="yearsInSales"
-                          checked={formData.yearsInSales === option}
-                          onChange={() => updateField('yearsInSales', option)}
-                          style={{marginRight: '10px', accentColor: '#f25025'}}
-                        />
-                        <span style={{fontSize: '14px', color: '#0e2a2d'}}>{option}</span>
-                      </label>
-                    ))}
-                  </div>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 20px', color: '#0e2a2d' }}>Your experience</h2>
+                <div style={groupStyle}>
+                  <label htmlFor="years" style={labelStyle}>{isPM ? 'Years of work experience *' : 'Years of sales experience *'}</label>
+                  <input id="years" type="text" inputMode="decimal" value={f.years} onChange={(e) => set('years', onlyNumber(e.target.value))} placeholder="For example, 4" style={inputStyle} />
                 </div>
-
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Current Role</label>
-                  <input
-                    type="text"
-                    value={formData.currentRole}
-                    onChange={(e) => updateField('currentRole', e.target.value)}
-                    placeholder="e.g., Account Executive"
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', boxSizing: 'border-box'}}
-                  />
+                <div style={groupStyle}>
+                  <label htmlFor="currentRole" style={labelStyle}>Current or most recent title and company *</label>
+                  <input id="currentRole" type="text" value={f.currentRole} onChange={(e) => set('currentRole', e.target.value)} placeholder="Account Executive at Acme" style={inputStyle} />
                 </div>
-
-                <div>
-                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Industries you've sold in *</label>
-                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
-                    {INDUSTRIES.map(industry => (
-                      <button
-                        key={industry}
-                        type="button"
-                        onClick={() => toggleIndustry(industry)}
-                        style={{padding: '10px 16px', border: formData.industries.includes(industry) ? '2px solid #f25025' : '2px solid #eaf6f7', borderRadius: '20px', backgroundColor: formData.industries.includes(industry) ? '#fff7e8' : 'white', cursor: 'pointer', fontSize: '14px', color: '#0e2a2d', display: 'flex', alignItems: 'center', gap: '6px'}}
-                      >
-                        {formData.industries.includes(industry) && <Check style={{width: '14px', height: '14px', color: '#f25025'}} />}
-                        {industry}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Goals */}
-            {currentStep === 3 && (
-              <div>
-                <h2 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#0e2a2d'}}>What are you looking for?</h2>
-                
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Typical Deal Size *</label>
-                  <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-                    {DEAL_SIZE_OPTIONS.map(option => (
-                      <label key={option} style={{display: 'flex', alignItems: 'center', padding: '14px 16px', border: formData.typicalDealSize === option ? '2px solid #f25025' : '2px solid #eaf6f7', borderRadius: '12px', cursor: 'pointer', backgroundColor: formData.typicalDealSize === option ? '#fff7e8' : 'white'}}>
-                        <input
-                          type="radio"
-                          name="typicalDealSize"
-                          checked={formData.typicalDealSize === option}
-                          onChange={() => updateField('typicalDealSize', option)}
-                          style={{marginRight: '10px', accentColor: '#f25025'}}
-                        />
-                        <span style={{fontSize: '14px', color: '#0e2a2d'}}>{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Hours you can work a week</label>
-                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
-                    {HOURS_OPTIONS.map(option => (
-                      <button
-                        key={option}
-                        type="button"
-                        onClick={() => updateField('hoursAvailable', option)}
-                        style={{padding: '10px 16px', border: formData.hoursAvailable === option ? '2px solid #f25025' : '2px solid #eaf6f7', borderRadius: '20px', backgroundColor: formData.hoursAvailable === option ? '#fff7e8' : 'white', cursor: 'pointer', fontSize: '14px', color: '#0e2a2d'}}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{marginBottom: '24px'}}>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>What kind of work interests you?</label>
-                  <textarea
-                    value={formData.workInterests}
-                    onChange={(e) => updateField('workInterests', e.target.value)}
-                    placeholder="e.g., Part-time BDR or AE work, a full-time role, team lead opportunities..."
-                    rows={3}
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
-                  />
-                </div>
-
-                <div>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>What are you looking for from Revfinery?</label>
-                  <textarea
-                    value={formData.lookingFor}
-                    onChange={(e) => updateField('lookingFor', e.target.value)}
-                    placeholder="e.g., Training, job opportunities, community, mentorship..."
-                    rows={3}
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: Final */}
-            {currentStep === 4 && (
-              <div>
-                <h2 style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#0e2a2d'}}>Almost done!</h2>
-                
-                {/* Show verified score if from assessment */}
-                {fromAssessment && assessmentScore ? (
-                  <div style={{padding: '20px', marginBottom: '24px', backgroundColor: '#eaf6f7', borderRadius: '12px', border: '2px solid #0c6b73'}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <Award style={{width: '24px', height: '24px', color: '#0c6b73'}} />
-                      <div>
-                        <p style={{fontWeight: '600', color: '#0e2a2d', marginBottom: '4px'}}>Skills Assessment Completed ✓</p>
-                        <p style={{fontSize: '14px', color: '#4c5f62'}}>Your verified score: <strong>{assessmentScore}%</strong></p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
+                {!isPM && (
                   <>
-                    <div style={{marginBottom: '24px'}}>
-                      <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Have you taken the Revfinery Skills Assessment?</label>
-                      <div style={{display: 'flex', flexWrap: 'wrap', gap: '10px'}}>
-                        {['Yes', 'No', 'Not yet, but I plan to'].map(option => (
-                          <label key={option} style={{display: 'flex', alignItems: 'center', padding: '14px 16px', border: formData.takenAssessment === option ? '2px solid #f25025' : '2px solid #eaf6f7', borderRadius: '12px', cursor: 'pointer', backgroundColor: formData.takenAssessment === option ? '#fff7e8' : 'white'}}>
-                            <input
-                              type="radio"
-                              name="takenAssessment"
-                              checked={formData.takenAssessment === option}
-                              onChange={() => updateField('takenAssessment', option)}
-                              style={{marginRight: '8px', accentColor: '#f25025'}}
-                            />
-                            <span style={{fontSize: '14px', color: '#0e2a2d'}}>{option}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div style={{marginBottom: '24px'}}>
-                      <label style={{display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>How did you hear about us? *</label>
-                      <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
-                        {HEARD_FROM_OPTIONS.map(option => (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() => updateField('heardFrom', option)}
-                            style={{padding: '10px 16px', border: formData.heardFrom === option ? '2px solid #f25025' : '2px solid #eaf6f7', borderRadius: '20px', backgroundColor: formData.heardFrom === option ? '#fff7e8' : 'white', cursor: 'pointer', fontSize: '14px', color: '#0e2a2d'}}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                <div style={groupStyle}>
+                  <label htmlFor="whatSold" style={labelStyle}>What you sold and who you sold it to *</label>
+                  <input id="whatSold" type="text" value={f.whatSold} onChange={(e) => set('whatSold', e.target.value)} placeholder="Payroll software to HR directors" style={inputStyle} />
+                </div>
+                <div style={groupStyle}>
+                  <label htmlFor="dealSize" style={labelStyle}>Average deal size in dollars *</label>
+                  <input id="dealSize" type="text" inputMode="decimal" value={f.dealSize} onChange={(e) => set('dealSize', onlyNumber(e.target.value))} placeholder="For example, 25000" style={inputStyle} />
+                </div>
+                <div style={groupStyle}>
+                  <label htmlFor="quota" style={labelStyle}>Most recent annual quota in dollars *</label>
+                  <input id="quota" type="text" inputMode="decimal" value={f.quota} onChange={(e) => set('quota', onlyNumber(e.target.value))} placeholder="For example, 600000" style={inputStyle} />
+                </div>
+                <div style={groupStyle}>
+                  <label htmlFor="attainment" style={labelStyle}>Percent of that quota you hit *</label>
+                  <input id="attainment" type="text" inputMode="decimal" value={f.attainment} onChange={(e) => set('attainment', onlyNumber(e.target.value))} placeholder="For example, 105" style={inputStyle} />
+                </div>
                   </>
                 )}
+              </div>
+            )}
 
+            {step === 3 && (
+              <div>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 20px', color: '#0e2a2d' }}>Availability and resume</h2>
+                <div style={groupStyle}>
+                  <label htmlFor="hours" style={labelStyle}>Hours you can work a week *</label>
+                  <input id="hours" type="text" inputMode="numeric" value={f.hours} onChange={(e) => set('hours', onlyNumber(e.target.value))} placeholder="For example, 20" style={inputStyle} />
+                  {roleHours && <p style={hintStyle}>This role needs about {roleHours} hours a week.</p>}
+                </div>
+                <div style={groupStyle}>
+                  <span style={labelStyle}>When can you work? Choose all that apply *</span>
+                  <Chips options={TIME_BLOCKS} selected={f.timeBlocks} onToggle={(value) => toggle('timeBlocks', value)} />
+                </div>
+                <div style={groupStyle}>
+                  <span style={labelStyle}>Work you want. Choose all that apply *</span>
+                  <Chips options={WORK_OPTIONS} selected={f.workInterests} onToggle={(value) => toggle('workInterests', value)} />
+                </div>
                 <div>
-                  <label style={{display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '14px', color: '#0e2a2d'}}>Anything else you'd like us to know?</label>
-                  <textarea
-                    value={formData.message}
-                    onChange={(e) => updateField('message', e.target.value)}
-                    placeholder="Optional..."
-                    rows={4}
-                    style={{width: '100%', padding: '14px 16px', border: '2px solid #eaf6f7', borderRadius: '12px', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box'}}
-                  />
+                  <label htmlFor="resume" style={labelStyle}>Resume *</label>
+                  <input id="resume" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={chooseResume} style={{ ...inputStyle, padding: '12px' }} />
+                  <p style={hintStyle}>{resume ? `Selected: ${resume.name}` : `PDF or Word, up to ${MAX_RESUME_MB} MB.`}</p>
+                  {resumeError && <p role="alert" style={{ ...hintStyle, color: '#b3261e', fontWeight: '600' }}>{resumeError}</p>}
                 </div>
               </div>
             )}
 
-            {/* Navigation */}
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #eaf6f7'}}>
+            {error && <p role="alert" style={{ margin: '20px 0 0', padding: '12px 14px', backgroundColor: '#fdecea', color: '#b3261e', borderRadius: '12px', fontSize: '14px', fontWeight: '600' }}>{error}</p>}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #eaf6f7' }}>
               <button
-                onClick={() => setCurrentStep(prev => prev - 1)}
-                disabled={currentStep === 1}
-                style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'transparent', border: 'none', color: currentStep === 1 ? '#ccc' : '#4c5f62', cursor: currentStep === 1 ? 'default' : 'pointer', fontWeight: '600', fontSize: '15px'}}
+                type="button"
+                onClick={() => setStep((prev) => prev - 1)}
+                disabled={step === 1}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', backgroundColor: 'transparent', border: 'none', color: step === 1 ? '#ccc' : '#4c5f62', cursor: step === 1 ? 'default' : 'pointer', fontWeight: '600', fontSize: '15px', fontFamily: 'inherit' }}
               >
-                <ArrowLeft style={{width: '18px', height: '18px'}} />
+                <ArrowLeft style={{ width: '18px', height: '18px' }} />
                 Back
               </button>
 
-              {currentStep < totalSteps ? (
+              {step < totalSteps ? (
                 <button
-                  onClick={() => setCurrentStep(prev => prev + 1)}
+                  type="button"
+                  onClick={() => setStep((prev) => prev + 1)}
                   disabled={!canProceed()}
-                  style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 28px', backgroundColor: canProceed() ? '#f25025' : '#ccc', color: 'white', border: 'none', borderRadius: '12px', cursor: canProceed() ? 'pointer' : 'default', fontWeight: '600', fontSize: '15px'}}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 26px', backgroundColor: canProceed() ? ACCENT : '#ccc', color: canProceed() ? ACCENT_TEXT : 'white', border: 'none', borderRadius: '12px', cursor: canProceed() ? 'pointer' : 'default', fontWeight: '700', fontSize: '15px', fontFamily: 'inherit' }}
                 >
                   Continue
-                  <ArrowRight style={{width: '18px', height: '18px'}} />
+                  <ArrowRight style={{ width: '18px', height: '18px' }} />
                 </button>
               ) : (
                 <button
-                  onClick={submitToHubSpot}
-                  disabled={!canProceed() || isSubmitting}
-                  style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 28px', backgroundColor: canProceed() && !isSubmitting ? '#0c6b73' : '#ccc', color: 'white', border: 'none', borderRadius: '12px', cursor: canProceed() && !isSubmitting ? 'pointer' : 'default', fontWeight: '600', fontSize: '15px'}}
+                  type="button"
+                  onClick={submit}
+                  disabled={!canProceed() || submitting}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 26px', backgroundColor: canProceed() && !submitting ? '#0c6b73' : '#ccc', color: 'white', border: 'none', borderRadius: '12px', cursor: canProceed() && !submitting ? 'pointer' : 'default', fontWeight: '700', fontSize: '15px', fontFamily: 'inherit' }}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                  {!isSubmitting && <CheckCircle style={{width: '18px', height: '18px'}} />}
+                  {submitting ? 'Sending...' : 'Submit application'}
+                  {!submitting && <CheckCircle style={{ width: '18px', height: '18px' }} />}
                 </button>
               )}
             </div>
           </div>
+
+          <p style={{ textAlign: 'center', fontSize: '13px', color: '#6b7d80', marginTop: '20px' }}>Fields marked * are required.</p>
         </div>
       </div>
     </>
