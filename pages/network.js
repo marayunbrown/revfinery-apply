@@ -243,7 +243,7 @@ export default function Application() {
               <span style={{ display: 'inline-block', backgroundColor: ACCENT, color: ACCENT_TEXT, padding: '6px 14px', borderRadius: '20px', marginBottom: '12px', fontWeight: '700', fontSize: '13px' }}>{LEVEL} level</span>
             </div>
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e2a2d', margin: '0 0 8px' }}>Apply to the Field</h1>
-            <p style={{ color: '#4c5f62', margin: '0' }}>For working sellers with 3 to 6 years of sales experience.</p>
+            <p style={{ color: '#4c5f62', margin: '0' }}>For working sellers with 3 to 5 years of sales experience.</p>
             {role && (
               <p style={{ display: 'inline-block', margin: '14px 0 0', padding: '8px 14px', backgroundColor: '#eaf6f7', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0c6b73' }}>
                 You're applying for: {role}
