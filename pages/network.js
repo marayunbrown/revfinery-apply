@@ -226,7 +226,7 @@ export default function Application() {
     <>
       <Head>
         <title>Apply to the Field | Revfinery Talent Network</title>
-        <meta name="description" content="For working sellers with 3 to 6 years of sales experience." />
+        <meta name="description" content="For working sellers with 3 to 5 years of sales experience." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
       </Head>
