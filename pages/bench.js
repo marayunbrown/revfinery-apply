@@ -225,7 +225,7 @@ export default function Application() {
     <>
       <Head>
         <title>Apply to the Bench | Revfinery Talent Network</title>
-        <meta name="description" content="For senior sellers and sales leaders with 7 or more years of experience." />
+        <meta name="description" content="For senior sellers and sales leaders with 6 or more years of experience." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="https://cdn.prod.website-files.com/68854e916991f33c6c47cd8c/69041aa4d9f017ce0c6842d8_ChatGPT%20Image%20Oct%2030%2C%202025%2C%2010_10_20%20PM.png" />
       </Head>
@@ -242,7 +242,7 @@ export default function Application() {
               <span style={{ display: 'inline-block', backgroundColor: ACCENT, color: ACCENT_TEXT, padding: '6px 14px', borderRadius: '20px', marginBottom: '12px', fontWeight: '700', fontSize: '13px' }}>{LEVEL} level</span>
             </div>
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e2a2d', margin: '0 0 8px' }}>Apply to the Bench</h1>
-            <p style={{ color: '#4c5f62', margin: '0' }}>For senior sellers and sales leaders with 7 or more years of experience.</p>
+            <p style={{ color: '#4c5f62', margin: '0' }}>For senior sellers and sales leaders with 6 or more years of experience.</p>
             {role && (
               <p style={{ display: 'inline-block', margin: '14px 0 0', padding: '8px 14px', backgroundColor: '#eaf6f7', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#0c6b73' }}>
                 You're applying for: {role}
